@@ -30,8 +30,6 @@ https://youtu.be/PrSxA_QEzuk
 <br>
 1. include the library
 <br>
-#include "Keypad.h"
-<br>
 #include "Adafruit_ILI9341.h"  
 <br>
 #include "font_Arial.h" 
