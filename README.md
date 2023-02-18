@@ -31,13 +31,13 @@ https://youtu.be/PrSxA_QEzuk
 <br>
 #include "Keypad.h"
 <br>
-#include "ILI9341_t3.h"  
+#include "Adafruit_ILI9341.h"  
 <br>
 #include "font_Arial.h" 
 <br>
-#include "ILI9341_t3_Controls.h"
+#include "Adafruit_ILI9341_Controls.h"
 <br>
-#include "ILI9341_t3_Keypad.h"
+#include "Adafruit_ILI9341_Keypad.h"
 <br>
 #include "XPT2046_Touchscreen.h"
 <br>
