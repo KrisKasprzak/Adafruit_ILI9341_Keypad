@@ -7,6 +7,7 @@ This library includes 2 classes for getting user input using a 0-9 digit number 
 <br>
 <br>
 ![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/09.jpg)
+<br>
 ![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/25.jpg)
 <br>
 Watch this YouTube Video for a demonstration:
