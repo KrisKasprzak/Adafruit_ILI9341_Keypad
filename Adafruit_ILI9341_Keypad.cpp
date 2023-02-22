@@ -23,27 +23,26 @@
 
   rev   date      author        change
   1.0   2/12/2023      kasprzak      initial code
-
+  1.1   2/21/2023      kasprzak      fixed number overrun issue
 
 */
 
-#include "Adafruit_ILI9341_Keypad.h"
-#include <Adafruit_ILI9341.h>
-#include <Adafruit_ILI9341_Controls.h>  // button library
+#include "ILI9341_t3_Keypad.h"
+#include <ILI9341_t3.h>
+#include <ILI9341_t3_Controls.h>  // button library
 #include <XPT2046_Touchscreen.h>
 
 
-NumberPad::NumberPad(Adafruit_ILI9341 *Display, XPT2046_Touchscreen *Touch) {
+NumberPad::NumberPad(ILI9341_t3 *Display, XPT2046_Touchscreen *Touch) {
   d = Display;
   t = Touch;
 }
-
 
 void NumberPad::init(uint16_t BackColor, uint16_t TextColor,
                   uint16_t ButtonColor, uint16_t BorderColor,
                   uint16_t PressedTextColor,
                   uint16_t PressedButtonColor, uint16_t PressedBorderColor,
-                  const GFXfont &ButtonFont) {
+                  const ILI9341_t3_font_t &ButtonFont) {
 
   kcolor = BackColor;
   tcolor = TextColor;
@@ -104,7 +103,7 @@ void NumberPad::setInitialText(const char *Text){
 	
 	uint8_t i;
 	
-	for (i = 0; i < (MAX_KEYBOARD_CHARS-1); i++){
+	for (i = 0; i < (MAX_KEYBOARD_CHARS); i++){
 		inittext[i] = Text[i];
 	}
 	hasinittext = true;
@@ -114,6 +113,41 @@ void NumberPad::setInitialText(const char *Text){
 void NumberPad::hideInput(){
 	
 	hideinput = true;
+}
+
+uint8_t NumberPad::get_float_digits(float num)
+{
+    int digits=0;
+    float ori=num;//storing original number
+    long num2=num;
+    while(num2>0)//count no of digits before floating point
+    {
+        digits++;
+        num2=num2/10;
+    }
+    if(ori==0)
+        digits=1;
+    num=ori;
+    float  no_float;
+    no_float=ori*(pow(10, (8-digits)));
+    long long int total=(long long int)no_float;
+    int no_of_digits, extrazeroes=0;
+    for(int i=0; i<8; i++)
+    {
+        int dig;
+        dig=total%10;
+        total=total/10;
+        if(dig!=0)
+            break;
+        else
+            extrazeroes++;
+    }
+    no_of_digits=8-extrazeroes;
+	if ( ((long) num) != num){
+		// has decimal
+		//no_of_digits++;
+	}
+    return no_of_digits;
 }
 
 void NumberPad::getInput() {
@@ -126,17 +160,18 @@ void NumberPad::getInput() {
 
   bool hasDP = false;
   uint8_t np = 1;              // digit number
+  uint8_t digits = 0;
 
   bool hasneg = false;
 
   bool KeepIn = true;
   float TheNumber = 0.0;
   
-  memset(dn,'\0',MAX_KEYBOARD_CHARS);
+  memset(dn,'\0',MAX_KEYBOARD_CHARS+2);
   dn[0] = ' ';
-  memset(hc,'\0',MAX_KEYBOARD_CHARS);
+  memset(hc,'\0',MAX_KEYBOARD_CHARS+2);
   hc[0] = ' ';
-
+	
   
 
   // get the decimals
@@ -149,7 +184,16 @@ void NumberPad::getInput() {
 			value = value * -1.0;
 		}
 		
-		dtostrf(value, 0, 6, dn);
+		digits = get_float_digits(value);
+
+		if (digits > MAX_KEYBOARD_CHARS){
+			digits =digits - MAX_KEYBOARD_CHARS;
+		}
+		else {
+			digits = MAX_KEYBOARD_CHARS-digits;
+		}
+
+		dtostrf(value, 0, digits, dn);
 		
 		if (!hasneg){
 			value = value * -1.0;
@@ -241,8 +285,8 @@ void NumberPad::getInput() {
 
   // text input box
   d->fillRect(CW - (KW / 2) + BS, CH - KH / 2 + BS, 2 * BS + 3 * BW, TBH, inputb);
-  d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 22);
-  d->setFont(&bfont);
+  d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 5);
+  d->setFont(bfont);
   d->setTextColor(inputt, inputb);
   if (hasinittext){
 	d->print(inittext);
@@ -282,7 +326,7 @@ void NumberPad::getInput() {
 		
           //valid number
           if ((b >= 0) & (b <= 9)) {
-            if (np > 10) { 
+            if (np > MAX_KEYBOARD_CHARS) { 
 			break; 
 			}
 			if ((dn[1] == '0') && (dn[2] != '.')) {
@@ -348,8 +392,8 @@ void NumberPad::getInput() {
         }
       }
 	  d->fillRect(CW - (KW / 2) + BS, CH - KH / 2 + BS, 2 * BS + 3 * BW, TBH, inputb);
-	  d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 22);
-	  d->setFont(&bfont);
+	  d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 5);
+	  d->setFont(bfont);
 	  d->setTextColor(inputt, inputb);
 
 		if (hideinput){
@@ -365,11 +409,11 @@ void NumberPad::getInput() {
 }
 
 void NumberPad::ProcessTouch() {
-  if (t->touched()) {
-	  
-    p = t->getPoint();
-    BtnX = p.x;
-    BtnY = p.y;
+
+	if (t->touched()){
+		p = t->getPoint();
+		BtnX = p.x;
+		BtnY = p.y;
 	
 #ifdef debug 
 	Serial.print("real coordinates:");
@@ -398,7 +442,7 @@ bool NumberPad::ProcessButtonPress(Button TheButton) {
     TheButton.draw(B_PRESSED);
     while (t->touched()) {
       if (TheButton.press(BtnX, BtnY)) {
-	
+		  delay(50);
         TheButton.draw(B_PRESSED);
       } else {
         TheButton.draw(B_RELEASED);
@@ -419,12 +463,11 @@ bool NumberPad::ProcessButtonPress(Button TheButton) {
 
 
 
-Keyboard::Keyboard(Adafruit_ILI9341 *Display, XPT2046_Touchscreen *Touch) {
+Keyboard::Keyboard(ILI9341_t3 *Display, XPT2046_Touchscreen *Touch) {
   d = Display;
   t = Touch;
 }
-void Keyboard::init(uint16_t BackColor, uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor, 
-uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor, const GFXfont &ButtonFont) {
+void Keyboard::init(uint16_t BackColor, uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor, uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor, const ILI9341_t3_font_t &ButtonFont) {
   kcolor = BackColor;
   tcolor = TextColor;
   bcolor = ButtonColor;
@@ -448,10 +491,8 @@ void Keyboard::getInput() {
   bool SpecialChar = false;
   bool KeepIn = true;
   
-  unsigned long timer;
-  
-  memset(dn,'\0',MAX_KEYBOARD_CHARS);
-  memset(hc,'\0',MAX_KEYBOARD_CHARS);
+    memset(dn,'\0',MAX_KEYBOARD_CHARS+1);
+  memset(hc,'\0',MAX_KEYBOARD_CHARS+1);
   
     // get the decimals
 	if (strlen(data) > 0){
@@ -563,18 +604,18 @@ void Keyboard::getInput() {
   KeyboardBtn[76].init(COL8, ROW4, BTNS, BTNS, rcolor, bcolor, tcolor, kcolor, "m", 0, 0, bfont);
   
   
-  KeyboardBtn[94].init(COL5 + (BTNS /2.0 ), ROW5, BTNS * 4, BTNS, rcolor, bcolor, tcolor, kcolor, "Space", 0, 0, bfont);
-  KeyboardBtn[95].init(COL9, ROW5, BTNS * 3.0, BTNS, rcolor, bcolor, tcolor, kcolor, "Caps", -23, 7, bfont);
+  KeyboardBtn[94].init(COL5 + (BTNS /2 ), ROW5, BTNS * 4, BTNS, rcolor, bcolor, tcolor, kcolor, "Space", 0, 0, bfont);
+  KeyboardBtn[95].init(COL9, ROW5, BTNS * 3, BTNS, rcolor, bcolor, tcolor, kcolor, "Caps", 0, 0, bfont);
   KeyboardBtn[96].init(COL2, ROW5, BTNS * 3, BTNS, rcolor, bcolor, tcolor, kcolor, "$%", 0, 0, bfont);
-  KeyboardBtn[97].init(COL9, BTNM + (BTNS/2), BTNS * 3, BTNS, rcolor, bcolor, tcolor, kcolor, "Back", -23, 7, bfont);
+  KeyboardBtn[97].init(COL9, BTNM + (BTNS/2), BTNS * 3, BTNS, rcolor, bcolor, tcolor, kcolor, "Back", 0, 0, bfont);
   KeyboardBtn[98].init(COL3 + (BTNS / 2), ROW6, BTNS * 4, BTNS * 1.2, rcolor, bcolor, tcolor, kcolor, "Done", 0, 0, bfont);
   KeyboardBtn[99].init(COL7 + (BTNS / 2), ROW6, BTNS * 4, BTNS * 1.2, rcolor, bcolor, tcolor, kcolor, "Cancel", 0, 0, bfont);
   
   d->fillScreen(kcolor);
     
   d->fillRect(BTNM * 2, BTNM * 2, BTNM + (BTNS * 7), 30, inputb);
-  d->setCursor(BTNM + 5, BTNM + 20);
-  d->setFont(&bfont);
+  d->setCursor(BTNM + 5, BTNM + 5);
+  d->setFont(bfont);
   d->setTextColor(inputt, inputb);
   
 	if(hasinittext){
@@ -588,13 +629,13 @@ void Keyboard::getInput() {
     KeyboardBtn[i].setCornerRadius(3);
   }
   
+
   KeyboardBtn[94].draw();
-  KeyboardBtn[95].draw(); 
+  KeyboardBtn[95].draw();
   KeyboardBtn[96].draw();
   KeyboardBtn[97].draw();
   KeyboardBtn[98].draw();
   KeyboardBtn[99].draw();
-  
   //hide number special characters
 
   KeyboardBtn[0].hide();
@@ -648,17 +689,10 @@ void Keyboard::getInput() {
   
   while (KeepIn) {
     if (t->touched()) {
-
-		timer = millis();
       ProcessTouch();
       //go thru all the KeyboardBtn, checking if they were pressed
-	  Serial.print("ProcessTouch() takes: "); Serial.println(millis() - timer);
       for (b = 0; b <= 100; b++) {
-		  
-		 timer = millis();
-		  
         if (ProcessButtonPress(KeyboardBtn[b])) {
-	  Serial.print("ProcessButtonPress() takes: "); Serial.println(millis() - timer);
 			
           if (b == 95){
 
@@ -957,8 +991,8 @@ void Keyboard::getInput() {
         }
       }
 		d->fillRect(BTNM * 2, BTNM * 2, BTNM + (BTNS * 7), 30, inputb);
-		d->setCursor(BTNM + 5, BTNM + 20);
-		d->setFont(&bfont);
+		d->setCursor(BTNM + 5, BTNM + 5);
+		d->setFont(bfont);
 		d->setTextColor(inputt, inputb);
 		if (hideinput){
 			d->print(hc);
@@ -980,7 +1014,7 @@ void Keyboard::setInitialText(const char *Text){
 	
 	uint8_t i;
 	
-	for (i = 0; i < (MAX_KEYBOARD_CHARS-1); i++){
+	for (i = 0; i < (MAX_KEYBOARD_CHARS); i++){
 		inittext[i] = Text[i];
 	}
 	hasinittext = true;
@@ -990,10 +1024,10 @@ void Keyboard::setInitialText(const char *Text){
 
 void Keyboard::ProcessTouch() {
 
-  if (t->touched()) {
-    p = t->getPoint();
-    BtnX = p.x;
-    BtnY = p.y;
+	if (t->touched()){		  
+		p = t->getPoint();
+		BtnX = p.x;
+		BtnY = p.y;
 
 #ifdef debug
      Serial.print(" real coordinates:");
@@ -1023,7 +1057,7 @@ bool Keyboard::ProcessButtonPress(Button TheButton) {
     TheButton.draw(B_PRESSED);
     while (t->touched()) {
       if (TheButton.press(BtnX, BtnY)) {
-
+delay(50);
         TheButton.draw(B_PRESSED);
       } else {
         TheButton.draw(B_RELEASED);
