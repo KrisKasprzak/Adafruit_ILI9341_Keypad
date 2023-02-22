@@ -6,7 +6,9 @@ This library includes 2 classes for getting user input using a 0-9 digit number 
 <b><h3>Version History</b></h3>
 <br>
   rev   date      author        change
+  <br>
   1.0   2/12/2023      kasprzak      initial code
+  <br>
   1.1   2/21/2023      kasprzak      fixed number overrun issue
 
 <br>
