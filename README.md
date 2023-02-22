@@ -4,7 +4,7 @@ This library includes 2 classes for getting user input using a 0-9 digit number 
 <b><h3> Latest version 1.1
 <br>
 <b><h3>Version History</b></h3>
-
+<br>
   rev   date      author        change
   1.0   2/12/2023      kasprzak      initial code
   1.1   2/21/2023      kasprzak      fixed number overrun issue
