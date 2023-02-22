@@ -1,7 +1,7 @@
 # Keyboard (numbers and characters) for the Adafruit_ILI9341 and XPT2046_Touchscreen Libraries
 This library includes 2 classes for getting user input using a 0-9 digit number pad and a full keyboard. This library is for the Adafruit_ILI9341 driver to drive common 2.8" LCF displays, and also requires touch screen capability.  This library is dependent on 1) Adafruit_ILI9341, 2) XPT2046_Touchscreen, and 3) Adafruit_ILI9341_Controls libraries.
 
-<b><h3> Latest version 1.1
+<b><h3> Latest version 1.1</b></h3>
 <br>
 <b><h3>Version History</b></h3>
 <br>
