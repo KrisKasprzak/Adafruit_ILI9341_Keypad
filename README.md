@@ -18,7 +18,7 @@ This library includes 2 classes for getting user input using a 0-9 digit number 
 <b>The keypad library MAY work with an Arduino UNO, NANO, and the MEGA. The full keyboard is not supported with any Arduino MCU. The best I can determine is either memory issue or 8-bit architecture</b>
 <br>
 <br>
-![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/09.jpg)
+![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/Images/09.jpg)
 <br>
 ![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/25.jpg)
 <br>
