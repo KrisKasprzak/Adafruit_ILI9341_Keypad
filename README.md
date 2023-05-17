@@ -17,11 +17,14 @@ This library includes 2 classes for getting user input using a 0-9 digit number 
 <br>
 <b>The keypad library MAY work with an Arduino UNO, NANO, and the MEGA. The full keyboard is not supported with any Arduino MCU. The best I can determine is either memory issue or 8-bit architecture</b>
 <br>
+<br>
 ![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/09.jpg)
 ![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/25.jpg)
 <br>
+<br>
 Watch this YouTube Video for a demonstration:
 https://youtu.be/PrSxA_QEzuk
+<br>
 <br>
 <b><h3>Library highlights</b></h3>
 1. Simple to implement library
