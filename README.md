@@ -15,10 +15,9 @@ This library includes 2 classes for getting user input using a 0-9 digit number 
 <b><h3>Note: if you are currently using Adafruit_ILI9341_Controls library, make sure you get the latest Adafruit_ILI9341_Controls version 6.0</b></h3>
 <br>
 <br>
-<b>The keypady library may work with an Arduino UNO, NANO, and the MEGA, however the full keyboard is not supported.</b>
+<b>The keypad library MAY work with an Arduino UNO, NANO, and the MEGA. The full keyboard is not supported with any Arduino MCU. The best I can determine is either memory issue or 8-bit architecture</b>
 <br>
-![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/09.jpg)
-<br>
+![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/16.jpg)
 ![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/25.jpg)
 <br>
 Watch this YouTube Video for a demonstration:
