@@ -24,8 +24,6 @@ This library includes a class for getting user input using a 0-9 digit. This lib
 <br>
 ![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/09.jpg)
 <br>
-![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/25.jpg)
-<br>
 <br>
 Watch this YouTube Video for a demonstration:
 https://youtu.be/PrSxA_QEzuk
@@ -33,16 +31,12 @@ https://youtu.be/PrSxA_QEzuk
 <br>
 <b><h3>Library highlights</b></h3>
 1. Simple to implement library
-2. Users can include both input types in the same program
-3. The keyboard includes all charaters, upper and lower case as well as all special symbols.
-4. The keyboard colors can be configured, but due to size, it will consume the entire screen
-5. The number pad can be configured for both colors and button sizes
-6. Both classes require a custom for for a better visual experience
-7. Both classes can allow hidden character input for password entry
-8. Both classes can allow initial instruction text in the input field
-9. Both classes can allow a predefined input 
-10. The number input can handle decimal and negative number inputs and can enable or disabled
-11. The library handles button presses, hence why you pass in the Touch object
+2. The number pad can be configured for both colors and button sizes
+3. This class can allow hidden character input for password entry
+4. This class can allow initial instruction text in the input field
+5. This class can allow a predefined input 
+6. The number input can handle decimal and negative number inputs and can enable or disabled
+7. The library handles button presses, hence why you pass in the Touch object
 
 <b><h3>General implementation</b></h3>
 <br>
@@ -67,8 +61,6 @@ https://youtu.be/PrSxA_QEzuk
 <br>
 NumberPad MyNumberPad(&Display, &Touch);
 <br>
-Keyboard MyKeyboard(&Display, &Touch);
-<br>
 <br>
 5. In setup, initialize the objects, and optionally specify any options
 <br>
@@ -85,31 +77,12 @@ MyNumberPad.init(ILI9341_BLACK, ILI9341_WHITE, ILI9341_BLUE, ILI9341_NAVY, ILI93
   // MyNumberPad.value = 3.14159;
   <br>
   <br>
-MyKeyboard.init(ILI9341_BLACK, ILI9341_WHITE, ILI9341_BLUE, ILI9341_NAVY, ILI9341_WHITE, ILI9341_CYAN, ILI9341_YELLOW, FONT_BUTTON);
-<br>
-  // MyKeyboard.setDisplayColor(uint16_t TextColor, uint16_t BackColor); change colors
-  <br>
-  // MyKeyboard.hideInput(); // for expanded password input
-_  <br>
-  // MyKeyboard.setInitialText(const char *Text); // maybe show and ip address format
-  <br>
-  // MyKeyboard.setInitialText("IP 111.222.333.444");
-  <br>
-  // optional to populate the input box
-  <br>
-  // strcpy(MyKeyboard.data, "TEXT");
-  <br>
-<br>
 
 6. When ready get user input
 <br>
 MyNumberPad.getInput(); // this will display the key pad control
 <br>
 or
-<br>
-<br>
-MyKeyboard.getInput(); // this will display the key pad control
-<br>
 <br>
 7. Once the user completes input, read the results
 <br>
