@@ -32,7 +32,7 @@
 #ifndef ADAFRUIT_ILI9341_KEYPAD_H
 #define ADAFRUIT_ILI9341_KEYPAD_H
 
-#define ILI9341_KEYPAD_VER 1.0
+#define ILI9341_KEYPAD_VER 3.0
 
 #if ARDUINO >= 100
 	 #include "Arduino.h"
