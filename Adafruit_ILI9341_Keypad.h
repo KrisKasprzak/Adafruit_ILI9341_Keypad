@@ -24,13 +24,15 @@
   rev   date      author        change
   1.0   2/12/2023      kasprzak      initial code
   1.1   2/21/2023      kasprzak      fixed number overrun issue
+  2.0   3/14/2023      kasprzak      fixed fonts for MEGA
+  3.0   10/9/2023      kasprzak      fixed so it compiles on arduing 2.0, added setDecimalPlaces method for controlling float digits
 
 */
 
 #ifndef ADAFRUIT_ILI9341_KEYPAD_H
 #define ADAFRUIT_ILI9341_KEYPAD_H
 
-#define ILI9341_KEYPAD_VER 1.0
+#define ILI9341_KEYPAD_VER 3.0
 
 #if ARDUINO >= 100
 	 #include "Arduino.h"
@@ -69,7 +71,7 @@
 #define COL9 273
 #define COL10 305
 
-#define MAX_KEYBOARD_CHARS 15
+#define MAX_KEYBOARD_CHARS 10
 
 
 class  NumberPad {
@@ -80,7 +82,7 @@ public:
 
 	void init(uint16_t BackColor,uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor, 
 	uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor,
-	const GFXfont &ButtonFont);
+	const GFXfont *ButtonFont);
 
 	void getInput();
 	
@@ -89,6 +91,8 @@ public:
 	void setButtonSizes(uint16_t ButtonWidth, uint16_t ButtonHeight, uint16_t Margins, uint16_t OKButtonWidth, uint16_t OKButtonHeight);
 	
 	void enableDecimal(bool State);
+	
+	void setDecimalPlaces(uint8_t Places);
 	
 	void enableNegative(bool State);
 	
@@ -119,11 +123,11 @@ private:
 	Adafruit_ILI9341 *d;
 	XPT2046_Touchscreen  *t;
 	TS_Point p;
+	const GFXfont *bfont;
 	
 	void ProcessTouch();
 	
 	bool ProcessButtonPress(Button TheButton);
-	uint8_t get_float_digits(float num);
 		
 	uint16_t CW = 160;  // width center of screen
 	uint16_t CH = 120;  // height center of screen
@@ -144,6 +148,7 @@ private:
 	uint16_t ptextcolor;
 	int16_t inputb;
 	int16_t inputt;
+	uint8_t dp = 2;
 	bool decstate = true;
 	bool negstate = true;
 	bool minmaxstate = false;
@@ -151,7 +156,6 @@ private:
 	bool hideinput = false;
 	float minval = 0.0;
 	float maxval = 0.0;
-	GFXfont bfont;
 	
 
 
@@ -165,7 +169,7 @@ public:
 
 	void init(uint16_t BackColor,uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor, 
 	uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor,
-	const GFXfont &ButtonFont);
+	const GFXfont *ButtonFont);
 
 	void getInput();
 	
@@ -193,6 +197,7 @@ private:
 	Adafruit_ILI9341 *d;
 	XPT2046_Touchscreen  *t;
 	TS_Point p;
+	const GFXfont *bfont;
 	
 	void ProcessTouch();
 	char dn[MAX_KEYBOARD_CHARS+1];
@@ -210,11 +215,8 @@ private:
 	uint16_t ptextcolor;
 	int16_t inputb;
 	int16_t inputt;
-	GFXfont bfont;
+	
 
 };
-
-
-
 
 #endif
