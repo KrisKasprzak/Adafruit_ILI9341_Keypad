@@ -24,8 +24,7 @@
   rev   date      author        change
   1.0   2/12/2023      kasprzak      initial code
   1.1   2/21/2023      kasprzak      fixed number overrun issue
-  2.0   3/14/2023      kasprzak      fixed fonts for MEGA
-  3.0   10/9/2023      kasprzak      fixed so it compiles on arduing 2.0, added setDecimalPlaces method for controlling float digits
+
 */
 
 #include "Adafruit_ILI9341_Keypad.h"
@@ -521,110 +520,7 @@ void Keyboard::getInput() {
 	}
 	
 
-Button KeyboardBtn[102]{
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-    { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-    { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d },
-  { d }
-};
+ Button KeyboardBtn[102](d);
 
   //numbers
   KeyboardBtn[16].init(COL1, ROW1, BTNS, BTNS, rcolor, bcolor, tcolor, kcolor, "1", 0, 0, bfont);
@@ -1161,8 +1057,8 @@ void Keyboard::ProcessTouch() {
 #endif
 
     // different displays may require reversing last 2 args
-    BtnX = map(p.x, 169, 3975, 0, 320);
-    BtnY = map(p.y, 304, 3850, 0, 240);
+    BtnX = map(p.x, 3975, 169, 0, 320);
+    BtnY = map(p.y, 3850, 304, 0, 240);
 
 #ifdef debug
      Serial.print(" , Mapped coordinates:");
