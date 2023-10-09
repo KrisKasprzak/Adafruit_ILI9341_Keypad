@@ -1,7 +1,7 @@
 # Keyboard (numbers and characters) for the Adafruit_ILI9341 and XPT2046_Touchscreen Libraries
 This library includes 2 classes for getting user input using a 0-9 digit number pad and a full keyboard (a-z, A-Z-0-9, special characters). This library is for the Adafruit_ILI9341 driver to drive common 2.8" LCF displays, and also requires touch screen capability.  This library is dependent on 1) Adafruit_ILI9341, 2) XPT2046_Touchscreen, and 3) Adafruit_ILI9341_Controls libraries.
 
-<b><h3> Latest version 1.1</b></h3>
+<b><h3> Latest version 3.0</b></h3>
 <br>
 <b><h3>Version History</b></h3>
 <br>
@@ -12,6 +12,7 @@ This library includes 2 classes for getting user input using a 0-9 digit number 
   1.1   2/21/2023      kasprzak      fixed number overrun issue
   <br>
   2.0   3/14/2023      kasprzak      fixed fonts for MEGA
+  <br>
   3.0   10/9/2023      kasprzak      fixed so it compiles on a
   <br>rduing 2.0, added setDecimalPlaces method for controlling float digits
 <br>
