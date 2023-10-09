@@ -98,6 +98,10 @@ void NumberPad::init(uint16_t BackColor, uint16_t TextColor,
   value = 0.0;
   bfont = ButtonFont;
   
+  OKBH = (2 * BH) + BS;
+  
+  
+  
   // in this class we are NOT initially writing to the char[0] as it's reserved for the - sign
   // hence we need to populate it to eliminate null terminator
 
@@ -268,17 +272,20 @@ void NumberPad::getInput() {
   NumberPadBtn[12].init(CW + (KW / 2) - BS - (OKBW / 2), CH - (KH / 2) + BS + (TBH / 2), OKBW, TBH, rcolor, bcolor, tcolor, kcolor, arrow, 20, 20, (OKBW - 20) / 2, (TBH - 20) / 5);
   
   // done
-  NumberPadBtn[13].init(CW + (KW / 2) - BS - (OKBW / 2), CH + (KH / 2) - BS - (OKBH / 2), OKBW, OKBH, rcolor, bcolor, ILI9341_GREEN, kcolor, check, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
+  NumberPadBtn[13].init(CW + (KW / 2) - BS - (OKBW / 2), CH - (KH / 2) + BS + TBH + BH + (2*BS) + (BS/2) + OKBH, OKBW, OKBH, rcolor, bcolor, ILI9341_GREEN, kcolor, check, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
   
   // cancel
-  NumberPadBtn[14].init(CW + (KW / 2) - BS - (OKBW / 2), CH + KH / 2 - 2 * BS - OKBH - (OKBH / 2), OKBW, OKBH, rcolor, bcolor, ILI9341_RED, kcolor, cancel, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
+  
+    NumberPadBtn[14].init(CW + (KW / 2) - BS - (OKBW / 2),   CH - (KH / 2) + BS + TBH + BH + BS + (BS/2) , OKBW, OKBH, rcolor, bcolor, ILI9341_RED, kcolor, cancel, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
+ 
+ 
  
   // large background box
-  d->fillRect(CW - (KW / 2), CH - KH / 2, KW, KH, kcolor);
+  d->fillRect(CW - (KW / 2), CH - (KH / 2) - (BS/2), KW, KH, kcolor);
 
   // text input box
   d->fillRect(CW - (KW / 2) + BS, CH - KH / 2 + BS, 2 * BS + 3 * BW, TBH, inputb);
-  d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 22);
+  d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 18);
   d->setFont(bfont);
   d->setTextColor(inputt, inputb);
   
@@ -398,7 +405,7 @@ void NumberPad::getInput() {
         }
       }
 		d->fillRect(CW - (KW / 2) + BS, CH - KH / 2 + BS, 2 * BS + 3 * BW, TBH, inputb);
-		d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 22);
+		d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 18);
 		d->setFont(bfont);
 		d->setTextColor(inputt, inputb);
 
