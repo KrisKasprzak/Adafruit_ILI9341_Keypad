@@ -93,8 +93,8 @@ void NumberPad::init(uint16_t BackColor, uint16_t TextColor,
   bcolor = ButtonColor;
   rcolor = BorderColor;
   ptextcolor = PressedTextColor;
-  inputt = BackColor;
-  inputb = TextColor;
+  inputt = TextColor;
+  inputb = ButtonColor;
   value = 0.0;
   bfont = ButtonFont;
   
@@ -172,8 +172,7 @@ void NumberPad::getInput() {
 	bool hasneg = false;
 	bool KeepIn = true;
 	float TheNumber = 0.0;
-	
-	
+		
 	memset(dn,'\0',MAX_KEYBOARD_CHARS+2);
 	dn[0] = ' ';
 	memset(hc,'\0',MAX_KEYBOARD_CHARS+2);
@@ -267,11 +266,13 @@ void NumberPad::getInput() {
   NumberPadBtn[11].init(CW - (KW / 2) + 3 * BS + 2 * BW + (BW / 2), CH - KH / 2 + 5 * BS + TBH + 3 * BH + (BH / 2), BW, BH, rcolor, bcolor, tcolor, kcolor, ".", 0, 0, bfont);
   // backspace
   NumberPadBtn[12].init(CW + (KW / 2) - BS - (OKBW / 2), CH - (KH / 2) + BS + (TBH / 2), OKBW, TBH, rcolor, bcolor, tcolor, kcolor, arrow, 20, 20, (OKBW - 20) / 2, (TBH - 20) / 5);
+  
   // done
   NumberPadBtn[13].init(CW + (KW / 2) - BS - (OKBW / 2), CH + (KH / 2) - BS - (OKBH / 2), OKBW, OKBH, rcolor, bcolor, ILI9341_GREEN, kcolor, check, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
+  
   // cancel
   NumberPadBtn[14].init(CW + (KW / 2) - BS - (OKBW / 2), CH + KH / 2 - 2 * BS - OKBH - (OKBH / 2), OKBW, OKBH, rcolor, bcolor, ILI9341_RED, kcolor, cancel, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
-
+ 
   // large background box
   d->fillRect(CW - (KW / 2), CH - KH / 2, KW, KH, kcolor);
 
