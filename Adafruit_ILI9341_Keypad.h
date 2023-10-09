@@ -32,7 +32,7 @@
 #ifndef ADAFRUIT_ILI9341_KEYPAD_H
 #define ADAFRUIT_ILI9341_KEYPAD_H
 
-#define ILI9341_KEYPAD_VER 3.0
+#define ILI9341_KEYPAD_VER 1.0
 
 #if ARDUINO >= 100
 	 #include "Arduino.h"
@@ -71,9 +71,10 @@
 #define COL9 273
 #define COL10 305
 
-#define MAX_KEYBOARD_CHARS 10
+#define MAX_KEYBOARD_CHARS 15
 
 
+	
 class  NumberPad {
 		
 public:
@@ -157,8 +158,6 @@ private:
 	float minval = 0.0;
 	float maxval = 0.0;
 	
-
-
 };
 
 class  Keyboard {
@@ -218,5 +217,8 @@ private:
 	
 
 };
+
+
+
 
 #endif
