@@ -57,12 +57,12 @@ https://youtu.be/PrSxA_QEzuk
 <br>
 3. create a touch object
 <br>
-4. create the keyboard and / or numberpad object
+4. create the numberpad object
 <br>
 NumberPad MyNumberPad(&Display, &Touch);
 <br>
 <br>
-5. In setup, initialize the objects, and optionally specify any options
+5. In setup, initialize the object, and optionally specify any options
 <br>
 MyNumberPad.init(ILI9341_BLACK, ILI9341_WHITE, ILI9341_BLUE, ILI9341_NAVY, ILI9341_WHITE, ILI9341_CYAN, ILI9341_YELLOW, FONT_BUTTON);
 <br>
@@ -71,6 +71,8 @@ MyNumberPad.init(ILI9341_BLACK, ILI9341_WHITE, ILI9341_BLUE, ILI9341_NAVY, ILI93
   // MyNumberPad.enableNegative(bool State); // disable / enable negative sign (enabled by default)
   <br>
   // MyNumberPad.setMinMax(float MininumValue, float MaximumValue); // want bound checks?
+  <br>
+  // MyNumberPad.setDecimalPlaces(3); // want control over the digits displayed (default is 2)?
   <br>
   // use the value property to set the initial value if desired
   <br>
@@ -93,10 +95,6 @@ note that the data type is a float so you will need to recast if an int is desir
 Serial.println((int) MyNumberPad.value);
 <br>
 or
-<br>
-Serial.println(MyKeyboard.data);
-<br>
-the data property is a char
 <br>
 <br>
 <b><h3>Caution</b></h3>
