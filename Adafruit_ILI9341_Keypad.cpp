@@ -24,7 +24,8 @@
   rev   date      author        change
   1.0   2/12/2023      kasprzak      initial code
   1.1   2/21/2023      kasprzak      fixed number overrun issue
-
+  2.0   3/14/2023      kasprzak      fixed fonts for MEGA
+  3.0   10/9/2023      kasprzak      fixed so it compiles on arduing 2.0, added setDecimalPlaces method for controlling float digits
 */
 
 #include "Adafruit_ILI9341_Keypad.h"
@@ -32,6 +33,49 @@
 #include <Adafruit_ILI9341_Controls.h>  // button library
 #include <XPT2046_Touchscreen.h>
 
+  // https:javl.github.io image2cpp 
+	    // 20 x 20
+  // 'check', 40x40px
+  const unsigned char check[] PROGMEM = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0xff, 0x80, 0x00, 0x00, 0x0f, 0xff, 0xf0, 0x00, 0x00,
+    0x3f, 0xff, 0xfc, 0x00, 0x00, 0x7e, 0x00, 0x7e, 0x00, 0x01, 0xf8, 0x00, 0x1f, 0x80, 0x03, 0xe0,
+    0x00, 0x07, 0x00, 0x07, 0xc0, 0x00, 0x02, 0x38, 0x07, 0x80, 0x00, 0x00, 0x7c, 0x0f, 0x00, 0x00,
+    0x00, 0xfc, 0x1e, 0x00, 0x00, 0x01, 0xfe, 0x1c, 0x00, 0x00, 0x03, 0xfc, 0x3c, 0x00, 0x00, 0x07,
+    0xf8, 0x38, 0x00, 0x00, 0x0f, 0xf0, 0x38, 0x00, 0x00, 0x1f, 0xe0, 0x70, 0x10, 0x00, 0x3f, 0xc6,
+    0x70, 0x38, 0x00, 0x7f, 0xce, 0x70, 0x7c, 0x00, 0xff, 0x8e, 0x70, 0xfe, 0x01, 0xff, 0x0e, 0x70,
+    0xff, 0x01, 0xfe, 0x0e, 0x70, 0xff, 0x83, 0xfc, 0x0e, 0x70, 0x7f, 0xc7, 0xf8, 0x0e, 0x70, 0x7f,
+    0xef, 0xf0, 0x0e, 0x70, 0x3f, 0xff, 0xf0, 0x0e, 0x70, 0x1f, 0xff, 0xe0, 0x0e, 0x78, 0x0f, 0xff,
+    0xc0, 0x1c, 0x38, 0x07, 0xff, 0x80, 0x1c, 0x38, 0x03, 0xff, 0x80, 0x1c, 0x1c, 0x01, 0xff, 0x00,
+    0x38, 0x1e, 0x00, 0xfe, 0x00, 0x78, 0x0e, 0x00, 0x7c, 0x00, 0x70, 0x0f, 0x00, 0x1c, 0x00, 0xf0,
+    0x07, 0x80, 0x00, 0x01, 0xe0, 0x03, 0xe0, 0x00, 0x07, 0xc0, 0x01, 0xf0, 0x00, 0x0f, 0x80, 0x00,
+    0xfe, 0x00, 0x7f, 0x00, 0x00, 0x3f, 0xff, 0xfc, 0x00, 0x00, 0x0f, 0xff, 0xf0, 0x00, 0x00, 0x03,
+    0xff, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  };
+  
+    // 'Arrow', 20x20px
+  const unsigned char arrow[] PROGMEM = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x06,
+    0x00, 0x00, 0x0e, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x3f, 0xff, 0xf0, 0x7f, 0xff, 0xf0, 0x7f, 0xff,
+    0xf0, 0x3f, 0xff, 0xf0, 0x1e, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x06, 0x00, 0x00, 0x02, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+  };
+  // 'x', 40x40px
+  const unsigned char cancel[] PROGMEM = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xff, 0xc0, 0x00, 0x00, 0x0f, 0xff, 0xf0, 0x00, 0x00,
+    0x3f, 0xff, 0xfc, 0x00, 0x00, 0xfe, 0x00, 0xff, 0x00, 0x01, 0xf8, 0x00, 0x1f, 0x80, 0x03, 0xe0,
+    0x00, 0x07, 0xc0, 0x07, 0xc0, 0x00, 0x03, 0xe0, 0x0f, 0x80, 0x00, 0x01, 0xf0, 0x0f, 0x1c, 0x00,
+    0x00, 0xf0, 0x1e, 0x3e, 0x00, 0x3c, 0x78, 0x1c, 0x7f, 0x00, 0x7e, 0x38, 0x3c, 0x7f, 0x00, 0xfe,
+    0x3c, 0x38, 0x7f, 0x81, 0xfe, 0x1c, 0x78, 0x7f, 0xc3, 0xfe, 0x1c, 0x70, 0x3f, 0xef, 0xfc, 0x1e,
+    0x70, 0x1f, 0xff, 0xf8, 0x0e, 0x70, 0x1f, 0xff, 0xe0, 0x0e, 0x70, 0x0f, 0xff, 0xc0, 0x0e, 0x70,
+    0x07, 0xff, 0x80, 0x0e, 0x70, 0x03, 0xff, 0x00, 0x0e, 0x70, 0x03, 0xff, 0x00, 0x0e, 0x70, 0x07,
+    0xff, 0x00, 0x0e, 0x70, 0x0f, 0xff, 0x80, 0x0e, 0x70, 0x0f, 0xff, 0xc0, 0x0e, 0x78, 0x1f, 0xff,
+    0xe0, 0x1e, 0x38, 0x3f, 0xdf, 0xf0, 0x1c, 0x3c, 0x7f, 0x8f, 0xf8, 0x3c, 0x3c, 0xff, 0x07, 0xfc,
+    0x38, 0x19, 0xfe, 0x03, 0xfc, 0x78, 0x0b, 0xfe, 0x01, 0xfc, 0xf0, 0x03, 0xfc, 0x00, 0xf9, 0xf0,
+    0x07, 0xf8, 0x00, 0x73, 0xe0, 0x07, 0xf0, 0x00, 0x07, 0xc0, 0x03, 0xe0, 0x00, 0x1f, 0x80, 0x01,
+    0xce, 0x00, 0x7f, 0x00, 0x00, 0x8f, 0xff, 0xfc, 0x00, 0x00, 0x1f, 0xff, 0xf8, 0x00, 0x00, 0x03,
+    0xff, 0xc0, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00
+  };
+  
 
 NumberPad::NumberPad(Adafruit_ILI9341 *Display, XPT2046_Touchscreen *Touch) {
   d = Display;
@@ -43,7 +87,7 @@ void NumberPad::init(uint16_t BackColor, uint16_t TextColor,
                   uint16_t ButtonColor, uint16_t BorderColor,
                   uint16_t PressedTextColor,
                   uint16_t PressedButtonColor, uint16_t PressedBorderColor,
-                  const GFXfont &ButtonFont) {
+                  const GFXfont *ButtonFont) {
 
   kcolor = BackColor;
   tcolor = TextColor;
@@ -116,137 +160,87 @@ void NumberPad::hideInput(){
 	hideinput = true;
 }
 
-uint8_t NumberPad::get_float_digits(float num)
-{
-    int digits=0;
-    float ori=num;//storing original number
-    long num2=num;
-    while(num2>0)//count no of digits before floating point
-    {
-        digits++;
-        num2=num2/10;
-    }
-    if(ori==0)
-        digits=1;
-    num=ori;
-    float  no_float;
-    no_float=ori*(pow(10, (8-digits)));
-    long long int total=(long long int)no_float;
-    int no_of_digits, extrazeroes=0;
-    for(int i=0; i<8; i++)
-    {
-        int dig;
-        dig=total%10;
-        total=total/10;
-        if(dig!=0)
-            break;
-        else
-            extrazeroes++;
-    }
-    no_of_digits=8-extrazeroes;
-	if ( ((long) num) != num){
-		// has decimal
-		//no_of_digits++;
-	}
-    return no_of_digits;
-}
-
 void NumberPad::getInput() {
 
+	uint16_t KW = (3 * BW) + (5 * BS) + OKBW;
+	uint16_t KH = (4 * BH) + (6 * BS) + TBH;
+	uint16_t i = 0;
+	uint16_t b = 0;
+	uint8_t digits = 0;
+	bool hasDP = false;
+	uint8_t np = 1;            
+	bool CanBackUp = false;
+	bool hasneg = false;
+	bool KeepIn = true;
+	float TheNumber = 0.0;
+	
+	
+	memset(dn,'\0',MAX_KEYBOARD_CHARS+2);
+	dn[0] = ' ';
+	memset(hc,'\0',MAX_KEYBOARD_CHARS+2);
+	hc[0] = ' ';
 
-  uint16_t KW = (3 * BW) + (5 * BS) + OKBW;
-  uint16_t KH = (4 * BH) + (6 * BS) + TBH;
-  uint16_t i = 0;
-  uint16_t b = 0;
-  uint8_t digits = 0;
-  bool hasDP = false;
-  uint8_t np = 1;              // digit number
-
-  bool hasneg = false;
-
-  bool KeepIn = true;
-  float TheNumber = 0.0;
-  
-  memset(dn,'\0',MAX_KEYBOARD_CHARS+2);
-  dn[0] = ' ';
-  memset(hc,'\0',MAX_KEYBOARD_CHARS+2);
-  hc[0] = ' ';
-
-  
-
-  // get the decimals
+  	// get the decimals
 	if (value != 0.0){
 
+		// odd but force negative to get the place holder for the sign [0]
 		if (value < 0) {
 			hasneg = true;
-		}
-		else {
-			value = value * -1.0;
+			
 		}
 		
-		digits = get_float_digits(value);
-
-		if (digits > MAX_KEYBOARD_CHARS){
-			digits =digits - MAX_KEYBOARD_CHARS;
+		// note value is a public property
+		if (dp == 0){
+			sprintf(dn,"% 0.f",value);
+		}
+		else if (dp == 1){
+			sprintf(dn,"% 0.1f",value);
+		}
+		else if (dp == 2){
+			sprintf(dn,"% 0.2f",value);
+		}
+		else if (dp == 3){
+			sprintf(dn,"% 0.3f",value);
+		}
+		else if (dp == 4){
+			sprintf(dn,"% 0.4f",value);
+		}
+		else if (dp == 5){
+			sprintf(dn,"% 0.5f",value);
+		}
+		else if (dp == 6){
+			sprintf(dn,"% 0.6f",value);
+		}
+		else if (dp == 7){
+			sprintf(dn,"% 0.7f",value);
 		}
 		else {
-			digits = MAX_KEYBOARD_CHARS-digits;
-		}
-
-		dtostrf(value, 0, digits, dn);
-		
-		if (!hasneg){
-			value = value * -1.0;
-			dn[0] =  ' ';
+			sprintf(dn,"% 0.2f",value);
 		}
 	  
 		np = strlen(dn); // account for possible sign
 	}
 	
-  //  https://javl.github.io/image2cpp/
+	Button NumberPadBtn[16]{
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d },
+	  { d }
 
-  // 20 x 20
-  // 'check', 40x40px
-  const unsigned char check[] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0xff, 0x80, 0x00, 0x00, 0x0f, 0xff, 0xf0, 0x00, 0x00,
-    0x3f, 0xff, 0xfc, 0x00, 0x00, 0x7e, 0x00, 0x7e, 0x00, 0x01, 0xf8, 0x00, 0x1f, 0x80, 0x03, 0xe0,
-    0x00, 0x07, 0x00, 0x07, 0xc0, 0x00, 0x02, 0x38, 0x07, 0x80, 0x00, 0x00, 0x7c, 0x0f, 0x00, 0x00,
-    0x00, 0xfc, 0x1e, 0x00, 0x00, 0x01, 0xfe, 0x1c, 0x00, 0x00, 0x03, 0xfc, 0x3c, 0x00, 0x00, 0x07,
-    0xf8, 0x38, 0x00, 0x00, 0x0f, 0xf0, 0x38, 0x00, 0x00, 0x1f, 0xe0, 0x70, 0x10, 0x00, 0x3f, 0xc6,
-    0x70, 0x38, 0x00, 0x7f, 0xce, 0x70, 0x7c, 0x00, 0xff, 0x8e, 0x70, 0xfe, 0x01, 0xff, 0x0e, 0x70,
-    0xff, 0x01, 0xfe, 0x0e, 0x70, 0xff, 0x83, 0xfc, 0x0e, 0x70, 0x7f, 0xc7, 0xf8, 0x0e, 0x70, 0x7f,
-    0xef, 0xf0, 0x0e, 0x70, 0x3f, 0xff, 0xf0, 0x0e, 0x70, 0x1f, 0xff, 0xe0, 0x0e, 0x78, 0x0f, 0xff,
-    0xc0, 0x1c, 0x38, 0x07, 0xff, 0x80, 0x1c, 0x38, 0x03, 0xff, 0x80, 0x1c, 0x1c, 0x01, 0xff, 0x00,
-    0x38, 0x1e, 0x00, 0xfe, 0x00, 0x78, 0x0e, 0x00, 0x7c, 0x00, 0x70, 0x0f, 0x00, 0x1c, 0x00, 0xf0,
-    0x07, 0x80, 0x00, 0x01, 0xe0, 0x03, 0xe0, 0x00, 0x07, 0xc0, 0x01, 0xf0, 0x00, 0x0f, 0x80, 0x00,
-    0xfe, 0x00, 0x7f, 0x00, 0x00, 0x3f, 0xff, 0xfc, 0x00, 0x00, 0x0f, 0xff, 0xf0, 0x00, 0x00, 0x03,
-    0xff, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-  };
-  // 'Arrow', 20x20px
-  const unsigned char arrow[] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x06,
-    0x00, 0x00, 0x0e, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x3f, 0xff, 0xf0, 0x7f, 0xff, 0xf0, 0x7f, 0xff,
-    0xf0, 0x3f, 0xff, 0xf0, 0x1e, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x06, 0x00, 0x00, 0x02, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-  };
-  // 'x', 40x40px
-  const unsigned char cancel[] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xff, 0xc0, 0x00, 0x00, 0x0f, 0xff, 0xf0, 0x00, 0x00,
-    0x3f, 0xff, 0xfc, 0x00, 0x00, 0xfe, 0x00, 0xff, 0x00, 0x01, 0xf8, 0x00, 0x1f, 0x80, 0x03, 0xe0,
-    0x00, 0x07, 0xc0, 0x07, 0xc0, 0x00, 0x03, 0xe0, 0x0f, 0x80, 0x00, 0x01, 0xf0, 0x0f, 0x1c, 0x00,
-    0x00, 0xf0, 0x1e, 0x3e, 0x00, 0x3c, 0x78, 0x1c, 0x7f, 0x00, 0x7e, 0x38, 0x3c, 0x7f, 0x00, 0xfe,
-    0x3c, 0x38, 0x7f, 0x81, 0xfe, 0x1c, 0x78, 0x7f, 0xc3, 0xfe, 0x1c, 0x70, 0x3f, 0xef, 0xfc, 0x1e,
-    0x70, 0x1f, 0xff, 0xf8, 0x0e, 0x70, 0x1f, 0xff, 0xe0, 0x0e, 0x70, 0x0f, 0xff, 0xc0, 0x0e, 0x70,
-    0x07, 0xff, 0x80, 0x0e, 0x70, 0x03, 0xff, 0x00, 0x0e, 0x70, 0x03, 0xff, 0x00, 0x0e, 0x70, 0x07,
-    0xff, 0x00, 0x0e, 0x70, 0x0f, 0xff, 0x80, 0x0e, 0x70, 0x0f, 0xff, 0xc0, 0x0e, 0x78, 0x1f, 0xff,
-    0xe0, 0x1e, 0x38, 0x3f, 0xdf, 0xf0, 0x1c, 0x3c, 0x7f, 0x8f, 0xf8, 0x3c, 0x3c, 0xff, 0x07, 0xfc,
-    0x38, 0x19, 0xfe, 0x03, 0xfc, 0x78, 0x0b, 0xfe, 0x01, 0xfc, 0xf0, 0x03, 0xfc, 0x00, 0xf9, 0xf0,
-    0x07, 0xf8, 0x00, 0x73, 0xe0, 0x07, 0xf0, 0x00, 0x07, 0xc0, 0x03, 0xe0, 0x00, 0x1f, 0x80, 0x01,
-    0xce, 0x00, 0x7f, 0x00, 0x00, 0x8f, 0xff, 0xfc, 0x00, 0x00, 0x1f, 0xff, 0xf8, 0x00, 0x00, 0x03,
-    0xff, 0xc0, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00
-  };
+	};
 
-  Button NumberPadBtn[16](d);
 
   //7
   NumberPadBtn[7].init(CW - (KW / 2) + BS + (BW / 2), CH - KH / 2 + BS + BS + TBH + (BH / 2), BW, BH, rcolor, bcolor, tcolor, kcolor, "7", 0, 0, bfont);
@@ -279,15 +273,15 @@ void NumberPad::getInput() {
   // cancel
   NumberPadBtn[14].init(CW + (KW / 2) - BS - (OKBW / 2), CH + KH / 2 - 2 * BS - OKBH - (OKBH / 2), OKBW, OKBH, rcolor, bcolor, ILI9341_RED, kcolor, cancel, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
 
-
   // large background box
   d->fillRect(CW - (KW / 2), CH - KH / 2, KW, KH, kcolor);
 
   // text input box
   d->fillRect(CW - (KW / 2) + BS, CH - KH / 2 + BS, 2 * BS + 3 * BW, TBH, inputb);
   d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 22);
-  d->setFont(&bfont);
+  d->setFont(bfont);
   d->setTextColor(inputt, inputb);
+  
   if (hasinittext){
 	d->print(inittext);
   }
@@ -313,7 +307,7 @@ void NumberPad::getInput() {
   NumberPadBtn[12].draw();
   NumberPadBtn[13].draw();
   NumberPadBtn[14].draw();
-  
+
   while (KeepIn) {
 	  
     if (t->touched()) {
@@ -326,17 +320,24 @@ void NumberPad::getInput() {
 		
           //valid number
           if ((b >= 0) & (b <= 9)) {
+			  
+			 Serial.println(np);
+			  
             if (np > MAX_KEYBOARD_CHARS) { 
-			break; 
+				Serial.println(340);
+				break; 
 			}
 			if ((dn[1] == '0') && (dn[2] != '.')) {
-			  dn[1] = b + '0';
-			  hc[1] = '*';
+				Serial.println(344);
+				dn[1] = b + '0';
+				hc[1] = '*';
 			} else {
-			  dn[np] = b + '0';
-			  hc[np] = '*';
-			  np++;
+				Serial.println(348);
+				dn[np] = b + '0';
+				hc[np] = '*';
+				np++;
 			}
+			CanBackUp = true;
           } else if (b == 10) {
             //negative number
             if (dn[0] == '-') {
@@ -354,12 +355,14 @@ void NumberPad::getInput() {
             }
           } else if (b == 12) {
             // back space
+			CanBackUp = false;
             if (np > 1) {
               --np;
               if (dn[np] == '.') { hasDP = false; }
               dn[np] = ' ';
 			  hc[np] = ' ';
             }
+					
           } else if (b == 13) {
             // done
 
@@ -380,21 +383,24 @@ void NumberPad::getInput() {
           // check min bounds
           if (TheNumber < minval) {
             // back out last entry
-            np--;
-            dn[np] = ' ';
+			if (CanBackUp){
+				np--;
+				dn[np] = ' ';
+			}
           }
           // check max bounds
           if (TheNumber > maxval) {
             // back out last entry
             np--;
             dn[np] = ' ';
+			
           }
         }
       }
-	  d->fillRect(CW - (KW / 2) + BS, CH - KH / 2 + BS, 2 * BS + 3 * BW, TBH, inputb);
-	  d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 22);
-	  d->setFont(&bfont);
-	  d->setTextColor(inputt, inputb);
+		d->fillRect(CW - (KW / 2) + BS, CH - KH / 2 + BS, 2 * BS + 3 * BW, TBH, inputb);
+		d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 22);
+		d->setFont(bfont);
+		d->setTextColor(inputt, inputb);
 
 		if (hideinput){
 			d->print(hc);
@@ -402,6 +408,7 @@ void NumberPad::getInput() {
 		else{
 			d->print(dn);
 		}
+		
     }
   }
   
@@ -423,8 +430,8 @@ void NumberPad::ProcessTouch() {
 #endif 
 
 //different displays may require reversing last 2 args 
-    BtnX = map(p.x, 3975, 169, 0, 320);
-    BtnY = map(p.y, 3850, 304, 0, 240);
+    BtnX = map(p.x, 169, 3975, 0, 320);
+    BtnY = map(p.y, 304, 3850, 0, 240);
 	
 #ifdef debug 
 	Serial.print(" , Mapped coordinates:");
@@ -436,6 +443,14 @@ void NumberPad::ProcessTouch() {
   }
 }
 
+void NumberPad::setDecimalPlaces(uint8_t Places) {
+	dp = Places;
+
+	if (dp > 7){
+		dp = 7;
+	}
+
+}
 
 bool NumberPad::ProcessButtonPress(Button TheButton) {
   if (TheButton.press(BtnX, BtnY)) {
@@ -457,10 +472,14 @@ bool NumberPad::ProcessButtonPress(Button TheButton) {
 }
 
 
+/*
 
 
 
 
+
+
+*/
 
 
 Keyboard::Keyboard(Adafruit_ILI9341 *Display, XPT2046_Touchscreen *Touch) {
@@ -468,7 +487,7 @@ Keyboard::Keyboard(Adafruit_ILI9341 *Display, XPT2046_Touchscreen *Touch) {
   t = Touch;
 }
 void Keyboard::init(uint16_t BackColor, uint16_t TextColor, uint16_t ButtonColor, uint16_t BorderColor, 
-uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor, const GFXfont &ButtonFont) {
+uint16_t PressedTextColor, uint16_t PressedButtonColor, uint16_t PressedBorderColor, const GFXfont *ButtonFont) {
   kcolor = BackColor;
   tcolor = TextColor;
   bcolor = ButtonColor;
@@ -491,9 +510,7 @@ void Keyboard::getInput() {
   bool CapsLock = false;
   bool SpecialChar = false;
   bool KeepIn = true;
-  
-  unsigned long timer;
-  
+   
   memset(dn,'\0',MAX_KEYBOARD_CHARS+1);
   memset(hc,'\0',MAX_KEYBOARD_CHARS+1);
   
@@ -503,10 +520,112 @@ void Keyboard::getInput() {
 		np = strlen(dn); // account for possible sign
 	}
 	
-  // https:javl.github.io image2cpp 
-  
-  Button KeyboardBtn[101](d);
-  
+
+Button KeyboardBtn[102]{
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+    { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+    { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d }
+};
+
   //numbers
   KeyboardBtn[16].init(COL1, ROW1, BTNS, BTNS, rcolor, bcolor, tcolor, kcolor, "1", 0, 0, bfont);
   KeyboardBtn[17].init(COL2, ROW1, BTNS, BTNS, rcolor, bcolor, tcolor, kcolor, "2", 0, 0, bfont);
@@ -605,20 +724,18 @@ void Keyboard::getInput() {
   KeyboardBtn[65].init(COL6, ROW4, BTNS, BTNS, rcolor, bcolor, tcolor, kcolor, "b", 0, 0, bfont);
   KeyboardBtn[77].init(COL7, ROW4, BTNS, BTNS, rcolor, bcolor, tcolor, kcolor, "n", 0, 0, bfont);
   KeyboardBtn[76].init(COL8, ROW4, BTNS, BTNS, rcolor, bcolor, tcolor, kcolor, "m", 0, 0, bfont);
-  
-  
   KeyboardBtn[94].init(COL5 + (BTNS /2.0 ), ROW5, BTNS * 4, BTNS, rcolor, bcolor, tcolor, kcolor, "Space", 0, 0, bfont);
   KeyboardBtn[95].init(COL9, ROW5, BTNS * 3.0, BTNS, rcolor, bcolor, tcolor, kcolor, "Caps", -23, 7, bfont);
   KeyboardBtn[96].init(COL2, ROW5, BTNS * 3, BTNS, rcolor, bcolor, tcolor, kcolor, "$%", 0, 0, bfont);
   KeyboardBtn[97].init(COL9, BTNM + (BTNS/2), BTNS * 3, BTNS, rcolor, bcolor, tcolor, kcolor, "Back", -23, 7, bfont);
   KeyboardBtn[98].init(COL3 + (BTNS / 2), ROW6, BTNS * 4, BTNS * 1.2, rcolor, bcolor, tcolor, kcolor, "Done", 0, 0, bfont);
   KeyboardBtn[99].init(COL7 + (BTNS / 2), ROW6, BTNS * 4, BTNS * 1.2, rcolor, bcolor, tcolor, kcolor, "Cancel", 0, 0, bfont);
-  
+   
   d->fillScreen(kcolor);
     
   d->fillRect(BTNM * 2, BTNM * 2, BTNM + (BTNS * 7), 30, inputb);
   d->setCursor(BTNM + 5, BTNM + 20);
-  d->setFont(&bfont);
+  d->setFont(bfont);
   d->setTextColor(inputt, inputb);
   
 	if(hasinittext){
@@ -693,17 +810,14 @@ void Keyboard::getInput() {
   while (KeepIn) {
     if (t->touched()) {
 
-		timer = millis();
       ProcessTouch();
       //go thru all the KeyboardBtn, checking if they were pressed
-	  Serial.print("ProcessTouch() takes: "); Serial.println(millis() - timer);
+	 
       for (b = 0; b <= 100; b++) {
 		  
-		 timer = millis();
-		  
+	  
         if (ProcessButtonPress(KeyboardBtn[b])) {
-	  Serial.print("ProcessButtonPress() takes: "); Serial.println(millis() - timer);
-			
+	  		
           if (b == 95){
 
             CapsLock = !CapsLock;
@@ -1002,7 +1116,7 @@ void Keyboard::getInput() {
       }
 		d->fillRect(BTNM * 2, BTNM * 2, BTNM + (BTNS * 7), 30, inputb);
 		d->setCursor(BTNM + 5, BTNM + 20);
-		d->setFont(&bfont);
+		d->setFont(bfont);
 		d->setTextColor(inputt, inputb);
 		if (hideinput){
 			d->print(hc);
@@ -1047,8 +1161,8 @@ void Keyboard::ProcessTouch() {
 #endif
 
     // different displays may require reversing last 2 args
-    BtnX = map(p.x, 3975, 169, 0, 320);
-    BtnY = map(p.y, 3850, 304, 0, 240);
+    BtnX = map(p.x, 169, 3975, 0, 320);
+    BtnY = map(p.y, 304, 3850, 0, 240);
 
 #ifdef debug
      Serial.print(" , Mapped coordinates:");
