@@ -272,11 +272,9 @@ void NumberPad::getInput() {
   NumberPadBtn[12].init(CW + (KW / 2) - BS - (OKBW / 2), CH - (KH / 2) + BS + (TBH / 2), OKBW, TBH, rcolor, bcolor, tcolor, kcolor, arrow, 20, 20, (OKBW - 20) / 2, (TBH - 20) / 5);
   
   // done
-  NumberPadBtn[13].init(CW + (KW / 2) - BS - (OKBW / 2), CH - (KH / 2) + BS + TBH + BH + (2*BS) + (BS/2) + OKBH, OKBW, OKBH, rcolor, bcolor, ILI9341_GREEN, kcolor, check, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
-  
+  NumberPadBtn[13].init(CW + (KW / 2) - BS - (OKBW / 2), CH - (KH / 2) + BS + TBH + BH + (2*BS) + (BS/2) + OKBH, OKBW, OKBH, rcolor, bcolor, ILI9341_GREEN, kcolor, check, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);  
   // cancel
-  
-    NumberPadBtn[14].init(CW + (KW / 2) - BS - (OKBW / 2),   CH - (KH / 2) + BS + TBH + BH + BS + (BS/2) , OKBW, OKBH, rcolor, bcolor, ILI9341_RED, kcolor, cancel, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
+  NumberPadBtn[14].init(CW + (KW / 2) - BS - (OKBW / 2),   CH - (KH / 2) + BS + TBH + BH + BS + (BS/2) , OKBW, OKBH, rcolor, bcolor, ILI9341_RED, kcolor, cancel, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
  
  
  
