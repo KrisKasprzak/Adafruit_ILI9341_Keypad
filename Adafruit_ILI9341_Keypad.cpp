@@ -24,6 +24,7 @@
   rev   date      author        change
   1.0   2/12/2023      kasprzak      initial code
   1.1   2/21/2023      kasprzak      fixed number overrun issue
+  2.0   2/23/2024      kasprzak      rewroted keyboard to run on ESP32
 
 */
 
@@ -93,19 +94,21 @@ void NumberPad::init(uint16_t BackColor, uint16_t TextColor,
   bcolor = ButtonColor;
   rcolor = BorderColor;
   ptextcolor = PressedTextColor;
-  inputt = TextColor;
-  inputb = ButtonColor;
+  inputt = BackColor;
+  inputb = TextColor;
   value = 0.0;
   bfont = ButtonFont;
-  
-  OKBH = (2 * BH) + BS;
-  
-  
   
   // in this class we are NOT initially writing to the char[0] as it's reserved for the - sign
   // hence we need to populate it to eliminate null terminator
 
 
+}
+
+ char *NumberPad::getCharValue(){
+	
+	return dn;
+	
 }
 
 void NumberPad::setDisplayColor(uint16_t TextColor, uint16_t BackColor) {
@@ -163,20 +166,57 @@ void NumberPad::hideInput(){
 	hideinput = true;
 }
 
+uint8_t NumberPad::get_float_digits(float num)
+{
+    int digits=0;
+    float ori=num;//storing original number
+    long num2=num;
+    while(num2>0)//count no of digits before floating point
+    {
+        digits++;
+        num2=num2/10;
+    }
+    if(ori==0)
+        digits=1;
+    num=ori;
+    float  no_float;
+    no_float=ori*(pow(10, (8-digits)));
+    long long int total=(long long int)no_float;
+    int no_of_digits, extrazeroes=0;
+    for(int i=0; i<8; i++)
+    {
+        int dig;
+        dig=total%10;
+        total=total/10;
+        if(dig!=0)
+            break;
+        else
+            extrazeroes++;
+    }
+    no_of_digits=8-extrazeroes;
+	if ( ((long) num) != num){
+		// has decimal
+		//no_of_digits++;
+	}
+    return no_of_digits;
+}
+
 void NumberPad::getInput() {
 
 	uint16_t KW = (3 * BW) + (5 * BS) + OKBW;
 	uint16_t KH = (4 * BH) + (6 * BS) + TBH;
 	uint16_t i = 0;
 	uint16_t b = 0;
-	uint8_t digits = 0;
 	bool hasDP = false;
-	uint8_t np = 1;            
+	uint8_t np = 1;              // digit number
 	bool CanBackUp = false;
 	bool hasneg = false;
 	bool KeepIn = true;
 	float TheNumber = 0.0;
-		
+  
+  if (hideinput){
+	  value = 0;
+  }
 	memset(dn,'\0',MAX_KEYBOARD_CHARS+2);
 	dn[0] = ' ';
 	memset(hc,'\0',MAX_KEYBOARD_CHARS+2);
@@ -190,58 +230,41 @@ void NumberPad::getInput() {
 			hasneg = true;
 			
 		}
-		
-		// note value is a public property
-		if (dp == 0){
-			sprintf(dn,"% 0.f",value);
-		}
-		else if (dp == 1){
-			sprintf(dn,"% 0.1f",value);
-		}
-		else if (dp == 2){
-			sprintf(dn,"% 0.2f",value);
-		}
-		else if (dp == 3){
-			sprintf(dn,"% 0.3f",value);
-		}
-		else if (dp == 4){
-			sprintf(dn,"% 0.4f",value);
-		}
-		else if (dp == 5){
-			sprintf(dn,"% 0.5f",value);
-		}
-		else if (dp == 6){
-			sprintf(dn,"% 0.6f",value);
-		}
-		else if (dp == 7){
-			sprintf(dn,"% 0.7f",value);
-		}
 		else {
-			sprintf(dn,"% 0.2f",value);
+			value = value * -1.0;
+		}
+		
+		gcvt(value,7,dn);
+				
+		if (!hasneg){
+			value = value * -1.0;
+			dn[0] =  ' ';
 		}
 	  
 		np = strlen(dn); // account for possible sign
 	}
 	
-	Button NumberPadBtn[16]{
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d },
-	  { d }
+	//  https://javl.github.io/image2cpp/
 
-	};
+Button NumberPadBtn[16]{
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d },
+  { d }
+
+};
 
 
   //7
@@ -270,23 +293,19 @@ void NumberPad::getInput() {
   NumberPadBtn[11].init(CW - (KW / 2) + 3 * BS + 2 * BW + (BW / 2), CH - KH / 2 + 5 * BS + TBH + 3 * BH + (BH / 2), BW, BH, rcolor, bcolor, tcolor, kcolor, ".", 0, 0, bfont);
   // backspace
   NumberPadBtn[12].init(CW + (KW / 2) - BS - (OKBW / 2), CH - (KH / 2) + BS + (TBH / 2), OKBW, TBH, rcolor, bcolor, tcolor, kcolor, arrow, 20, 20, (OKBW - 20) / 2, (TBH - 20) / 5);
-  
   // done
   NumberPadBtn[13].init(CW + (KW / 2) - BS - (OKBW / 2), CH - (KH / 2) + BS + TBH + BH + (2*BS) + (BS/2) + OKBH, OKBW, OKBH, rcolor, bcolor, ILI9341_GREEN, kcolor, check, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);  
   // cancel
   NumberPadBtn[14].init(CW + (KW / 2) - BS - (OKBW / 2),   CH - (KH / 2) + BS + TBH + BH + BS + (BS/2) , OKBW, OKBH, rcolor, bcolor, ILI9341_RED, kcolor, cancel, 40, 40, (OKBW - 40) / 2, (OKBH - 40) / 2);
  
- 
- 
   // large background box
-  d->fillRect(CW - (KW / 2), CH - (KH / 2) - (BS/2), KW, KH, kcolor);
+  d->fillRect(CW - (KW / 2), CH - KH / 2, KW, KH, kcolor);
 
   // text input box
   d->fillRect(CW - (KW / 2) + BS, CH - KH / 2 + BS, 2 * BS + 3 * BW, TBH, inputb);
-  d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 18);
+  d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 22);
   d->setFont(bfont);
   d->setTextColor(inputt, inputb);
-  
   if (hasinittext){
 	d->print(inittext);
   }
@@ -324,20 +343,18 @@ void NumberPad::getInput() {
         if (ProcessButtonPress(NumberPadBtn[b])) {
 		
           //valid number
-          if ((b >= 0) & (b <= 9)) {
-			  
-			 Serial.println(np);
-			  
+          if (b <= 9) {
+			  	  
             if (np > MAX_KEYBOARD_CHARS) { 
-				Serial.println(340);
+	
 				break; 
 			}
 			if ((dn[1] == '0') && (dn[2] != '.')) {
-				Serial.println(344);
+		
 				dn[1] = b + '0';
 				hc[1] = '*';
 			} else {
-				Serial.println(348);
+		
 				dn[np] = b + '0';
 				hc[np] = '*';
 				np++;
@@ -403,10 +420,10 @@ void NumberPad::getInput() {
         }
       }
 		d->fillRect(CW - (KW / 2) + BS, CH - KH / 2 + BS, 2 * BS + 3 * BW, TBH, inputb);
-		d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 18);
+		d->setCursor(CW - (KW / 2) + BS + 5, CH - KH / 2 + BS + 22);
 		d->setFont(bfont);
 		d->setTextColor(inputt, inputb);
-
+			
 		if (hideinput){
 			d->print(hc);
 		}
@@ -417,6 +434,14 @@ void NumberPad::getInput() {
     }
   }
   
+	// if no negative / shift chars
+	if(!negstate) {
+
+		for (i = 1 ; i < MAX_KEYBOARD_CHARS; i++){
+			dn[i-1] = dn[i];
+		}	
+		dn[i] = '\0';
+	}
 
 }
 
@@ -448,14 +473,6 @@ void NumberPad::ProcessTouch() {
   }
 }
 
-void NumberPad::setDecimalPlaces(uint8_t Places) {
-	dp = Places;
-
-	if (dp > 7){
-		dp = 7;
-	}
-
-}
 
 bool NumberPad::ProcessButtonPress(Button TheButton) {
   if (TheButton.press(BtnX, BtnY)) {
@@ -477,3 +494,497 @@ bool NumberPad::ProcessButtonPress(Button TheButton) {
 }
 
 
+/*
+
+class to create a full keyboard with upper, lower case, special characters
+
+due to size all buttons, spacings and location are hard coded. the keyboard will consume an entire 320 x 240 displays
+
+output is a char 
+
+
+*/
+
+
+
+Keyboard::Keyboard(Adafruit_ILI9341 *Display, XPT2046_Touchscreen *Touch) {
+  d = Display;
+  t = Touch;
+}
+void Keyboard::init(uint16_t BackColor, uint16_t ButtonTextColor, uint16_t ButtonColor, uint16_t PressedTextColor, uint16_t PressedButtonColor, const GFXfont *TextFont) {
+  kcolor = BackColor;
+  tcolor = ButtonTextColor;
+  bcolor = ButtonColor;
+  ptcolor = PressedTextColor;
+  pbcolor = PressedButtonColor;
+  inputb = ButtonTextColor;
+  inputt = ButtonColor;
+  Size = 30;
+  f = TextFont;
+    
+}
+void Keyboard::setDisplayColor(uint16_t TextColor, uint16_t BackColor) {
+  inputt = TextColor;
+  inputb = BackColor;
+}
+
+void Keyboard::BuildButton(BUTTON *temp, int Col, int Row){
+	temp->x = Col;
+	temp->y = Row;	
+	temp->w = 1;	
+}
+
+void Keyboard::BuildButton(BUTTON *temp, int Col, int Row, uint8_t Wide){
+	temp->x = Col;
+	temp->y = Row;	
+	temp->w = Wide;	
+}
+
+void Keyboard::DrawButton(BUTTON *temp, uint8_t ASCII, uint8_t State){
+	
+	
+	if (State == B_PRESSED){
+		d->fillRect(temp->x, temp->y, Size + ((temp->w - 1) * (2 + Size)), Size, pbcolor);
+		d->setTextColor(ptcolor, bcolor);
+	} 
+	else {
+		d->fillRect(temp->x, temp->y, Size + ((temp->w - 1) * (2 + Size)), Size, bcolor);
+		d->setTextColor(tcolor, bcolor);
+	}
+	d->setCursor(temp->x + 7, temp->y+21);
+	d->setFont(f);
+		
+	if (ASCII == 168){
+		d->print("Space");
+	}
+	else if (ASCII == 169){
+		d->print("Done");
+	}
+	else if (ASCII == 170){
+		d->print("Cancel");
+	}
+	else if (ASCII == 171){
+		d->print("Back");
+	}
+	else if (ASCII == 172){
+		d->print("Aa");
+	}
+	else if (ASCII == 173){
+		d->print("#$%^");
+	}
+	else {
+		d->print((char) ASCII);
+	}
+}
+
+bool Keyboard::Pressed(BUTTON *temp, uint8_t ASCII){
+	bool found = false;
+	bool redraw = true;
+	bool redrawoff = false;
+	
+	if ((BtnX > temp->x) && (BtnX < (temp->x + (Size * temp->w)))){
+		if ((BtnY > temp->y) && (BtnY < (temp->y + Size))){
+		
+			while (t->touched()) {
+				if (((BtnX > temp->x) && (BtnX < (temp->x + (Size * temp->w)))) && ((BtnY > temp->y) && (BtnY < (temp->y + Size)))){
+					if (redraw){
+						DrawButton(temp, ASCII, B_PRESSED);
+						redraw = false;
+						redrawoff = true;
+					}
+					found = true;
+				} 
+				else {
+					if (redrawoff){
+						DrawButton(temp, ASCII, B_RELEASED);
+						redrawoff = false;
+					}
+					found = false;
+					redraw = true;
+				}
+			
+				ProcessTouch();
+			}
+
+			DrawButton(temp, ASCII, B_RELEASED);
+			return found;
+		}
+	}
+	return false;
+		
+}
+
+void Keyboard::DisplayInput(){
+	
+	
+	d->fillRect(Col1, Row0, Col10 + (2 * 9), Size, inputt);
+	d->setCursor(Col1 + 5, Row0 + 25);
+	d->setFont(f);
+	d->setTextColor(inputb, inputt);
+
+
+	if (hasinittext) {
+		d->print(inittext);
+	} else {
+		d->print(dn);
+	}
+}
+
+void Keyboard::clearInput() {
+	data[0] = '\0';
+}
+
+void Keyboard::getInput() {
+
+  uint8_t np = 0;
+  uint16_t b = 0, i = 0;
+  CapsLock = false;
+  bool SpecialChar = false;
+  bool KeepIn = true;
+  bool found = false;
+  memset(dn, '\0', MAX_KEYBOARD_CHARS + 1);
+
+  if (strlen(data) > 0) {
+    strcpy(dn, data);
+    np = strlen(dn); 
+  }
+
+  BUTTON Buttons[74];
+
+  BuildButton(&Buttons[0], Col1, Row1);      //,  "!");
+  BuildButton(&Buttons[1], Col5, Row3);      //,  "''");
+  BuildButton(&Buttons[2], Col3, Row1);      //,,  "#");
+  BuildButton(&Buttons[3], Col4, Row1);      //,,  "$");
+  BuildButton(&Buttons[4], Col5, Row1);      //,,  "%");
+  BuildButton(&Buttons[5], Col7, Row1);      //,,  "&");
+  BuildButton(&Buttons[6], Col6, Row3);      //,,  "'");
+  BuildButton(&Buttons[7], Col9, Row1);      //,,  "(");
+  BuildButton(&Buttons[8], Col10, Row1);     //,,  ")");
+  BuildButton(&Buttons[9], Col8, Row1);      //,,  "*");
+  BuildButton(&Buttons[10], Col6, Row2);     //,,  "+");
+  BuildButton(&Buttons[11], Col7, Row3);     //,,  ",");
+  BuildButton(&Buttons[12], Col3, Row2);     //,,  "-");
+  BuildButton(&Buttons[13], Col8, Row3);     //,,  ".");
+  BuildButton(&Buttons[14], Col5, Row4);     //,,  "/");
+  BuildButton(&Buttons[15], Col1, Row1);     //,, "0");
+  BuildButton(&Buttons[16], Col2, Row1);     //,, "1");
+  BuildButton(&Buttons[17], Col3, Row1);     //,,  "2");
+  BuildButton(&Buttons[18], Col4, Row1);     //,,  "3");
+  BuildButton(&Buttons[19], Col5, Row1);     //,,  "4");
+  BuildButton(&Buttons[20], Col6, Row1);     //,,  "5");
+  BuildButton(&Buttons[21], Col7, Row1);     //,,  "6");
+  BuildButton(&Buttons[22], Col8, Row1);     //,,  "7");
+  BuildButton(&Buttons[23], Col9, Row1);     //,,  "8");
+  BuildButton(&Buttons[24], Col10, Row1);    //,,  "9");
+  BuildButton(&Buttons[25], Col3, Row3);     //,,  ":");
+  BuildButton(&Buttons[26], Col4, Row3);     //,,  ";");
+  BuildButton(&Buttons[27], Col9, Row3);     //,,  "<");
+  BuildButton(&Buttons[28], Col5, Row2);     //,,  "=");
+  BuildButton(&Buttons[29], Col10, Row3);    //,,  ">");
+  BuildButton(&Buttons[30], Col6, Row4);     //,,  "?");
+  BuildButton(&Buttons[31], Col2, Row1);     //,,  "@");
+  BuildButton(&Buttons[32], Col1, Row3);     //,,  "A");
+  BuildButton(&Buttons[33], Col6, Row4);     //,,  "B");
+  BuildButton(&Buttons[34], Col4, Row4);     //,,  "C");
+  BuildButton(&Buttons[35], Col3, Row3);     //,,  "D");
+  BuildButton(&Buttons[36], Col3, Row2);     //,,  "E");
+  BuildButton(&Buttons[37], Col4, Row3);     //,,  "F");
+  BuildButton(&Buttons[38], Col5, Row3);     //,,  "G");
+  BuildButton(&Buttons[39], Col6, Row3);     //,,  "H");
+  BuildButton(&Buttons[40], Col8, Row2);     //,,  "I");
+  BuildButton(&Buttons[41], Col7, Row3);     //,,  "J");
+  BuildButton(&Buttons[42], Col8, Row3);     //,,  "K");
+  BuildButton(&Buttons[43], Col9, Row3);     //,,  "L");
+  BuildButton(&Buttons[44], Col8, Row4);     //,,  "M");
+  BuildButton(&Buttons[45], Col7, Row4);     //,,  "N");
+  BuildButton(&Buttons[46], Col9, Row2);     //,,  "O");
+  BuildButton(&Buttons[47], Col10, Row2);    //,,  "P");
+  BuildButton(&Buttons[48], Col1, Row2);     //,,  "Q");
+  BuildButton(&Buttons[49], Col4, Row2);     //,,  "R");
+  BuildButton(&Buttons[50], Col2, Row3);     //,,  "S");
+  BuildButton(&Buttons[51], Col5, Row2);     //,,  "T");
+  BuildButton(&Buttons[52], Col7, Row2);     //,,  "U");
+  BuildButton(&Buttons[53], Col5, Row4);     //,,  "V");
+  BuildButton(&Buttons[54], Col2, Row2);     //,,  "W");
+  BuildButton(&Buttons[55], Col3, Row4);     //,,  "X");
+  BuildButton(&Buttons[56], Col6, Row2);     //,,  "Y");
+  BuildButton(&Buttons[57], Col2, Row4);     //,,  "Z");
+  BuildButton(&Buttons[58], Col7, Row2);     //,,  "[");
+  BuildButton(&Buttons[59], Col1, Row3);     //,,  "\\");
+  BuildButton(&Buttons[60], Col8, Row2);     //,,  "]");
+  BuildButton(&Buttons[61], Col6, Row1);     //,,  "^");
+  BuildButton(&Buttons[62], Col4, Row2);     //,,  "_");
+  BuildButton(&Buttons[63], Col1, Row2);     //,,  "`");
+  BuildButton(&Buttons[64], Col9, Row2);     //,,  "{");
+  BuildButton(&Buttons[65], Col2, Row3);     //,,  "|");
+  BuildButton(&Buttons[66], Col10, Row2);    //,,  "}");
+  BuildButton(&Buttons[67], Col2, Row2);     //,,  "~");
+  BuildButton(&Buttons[68], Col4, Row5, 4);  //,, 3, "Space");
+  BuildButton(&Buttons[69], Col1, Row6, 3);  //,, 3, "Done");
+  BuildButton(&Buttons[70], Col4, Row6, 4);  //,, 3, "Cancel");
+  BuildButton(&Buttons[71], Col8, Row6, 3);  //,, 3, "Back");
+  BuildButton(&Buttons[72], Col1, Row5, 3);  //,, 3, "Caps");
+  BuildButton(&Buttons[73], Col8, Row5, 3);  //,, 3, "$%");
+
+  d->fillScreen(kcolor);
+
+
+
+DisplayInput();
+
+
+  // draw numbers
+  for (i = 15; i < 25; i++) {
+    DrawButton(&Buttons[i], i + 33, B_RELEASED);
+  }
+
+  if (CapsLock) {
+    // A-Z
+    for (i = 32; i < 58; i++) {
+      DrawButton(&Buttons[i], i + 33, B_RELEASED);
+    }
+  } else {
+    // a-z
+    for (i = 32; i < 58; i++) {
+      DrawButton(&Buttons[i], i + 33 + 32, B_RELEASED);
+    }
+  }
+
+  for (i = 68; i < 74; i++) {
+    DrawButton(&Buttons[i], i + 100, B_RELEASED);
+  }
+
+  while (KeepIn) {
+
+    if (t->touched()) {
+
+      ProcessTouch();
+      //go thru all the KeyboardBtn, checking if they were pressed
+
+
+      if (SpecialChar) {
+		found = false;
+        for (b = 0; b < 15; b++) {
+          if (Pressed(&Buttons[b], b + 33)) {
+			dn[np++] = (char)(b + 33);
+			DisplayInput();
+			found = true;
+            break;
+          }
+        }
+        for (b = 25; b < 32; b++) {
+			if (Pressed(&Buttons[b], b + 33) && !found) {
+				dn[np++] = (char)(b + 33);
+				DisplayInput();
+				found = true;
+				break;
+			}
+        }
+        for (b = 58; b < 66; b++) {
+			if (Pressed(&Buttons[b],b + 33)&& !found) {
+				dn[np++] = (char)(b + 33);
+				DisplayInput();
+				found = true;
+				break;
+			}
+        }
+        for (b = 58; b < 64; b++) {
+			if (Pressed(&Buttons[b],b + 33)&& !found) {
+				dn[np++] = (char)(b + 33);
+				DisplayInput();
+				found = true;
+				break;
+			}
+        }
+        for (b = 64; b < 68; b++) {
+			if (Pressed(&Buttons[b],b + 33+26)&& !found) {
+				dn[np++] = (char)(b + 33+26);
+				DisplayInput();
+				found = true;
+				break;
+			}
+        }
+      } else {
+			found = false;
+		  // check numbers
+		  for (b = 15; b < 25; b++) {
+			if (Pressed(&Buttons[b], b + 33)&& !found) {
+				dn[np++] = (char)(b + 33);
+				DisplayInput();
+				found = true;
+				break;
+			}
+		  }
+		// check letters
+        for (b = 32; b < 58; b++) {
+			if (CapsLock) {
+				if (Pressed(&Buttons[b], b + 33)&& !found) {
+					dn[np++] = (char)(b + 33);
+					DisplayInput();
+					found = true;
+					break;
+				}
+            } else {
+				if (Pressed(&Buttons[b], b + 33+32)&& !found) {
+					dn[np++] = (char)(b + 33+32);
+					DisplayInput();
+					found = true;
+					break; 
+				}
+          }
+        }
+      }
+
+      for (b = 68; b < 74; b++) {
+        if (Pressed(&Buttons[b], b+100)) {
+          break;
+        }
+      }
+      
+      // caps lock
+      if (b == 72) {
+        CapsLock = !CapsLock;
+		SpecialChar = false;
+		  for (i = 15; i < 25; i++) {
+			DrawButton(&Buttons[i], i + 33, B_RELEASED);
+		}
+        if (CapsLock) {
+          for (i = 32; i < 58; i++) {
+            DrawButton(&Buttons[i], i + 33, B_RELEASED);
+          }
+        } else {
+          for (i = 32; i < 58; i++) {
+            DrawButton(&Buttons[i], i + 33 + 32, B_RELEASED);
+          }
+        }
+      }
+      // special characters
+      if (b == 73) {
+        SpecialChar = !SpecialChar;
+        d->fillRect(Col1, Row1, Col10 + Size, 4 * (Size + 2), kcolor);
+        if (SpecialChar) {
+          for (i = 0; i < 15; i++) {
+            DrawButton(&Buttons[i], i + 33, B_RELEASED);
+          }
+          for (i = 25; i < 32; i++) {
+            DrawButton(&Buttons[i], i + 33, B_RELEASED);
+          }
+          for (i = 58; i < 66; i++) {
+            DrawButton(&Buttons[i], i + 33, B_RELEASED);
+          }
+          for (i = 58; i < 64; i++) {
+            DrawButton(&Buttons[i], i + 33, B_RELEASED);
+          }
+          for (i = 64; i < 68; i++) {
+            DrawButton(&Buttons[i], i + 33 + 26, B_RELEASED);
+          }
+        } else {
+          for (i = 15; i < 25; i++) {
+            DrawButton(&Buttons[i], i + 33, B_RELEASED);
+          }
+          if (CapsLock) {
+            for (i = 32; i < 58; i++) {
+              DrawButton(&Buttons[i], i + 33, B_RELEASED);
+            }
+          } else {
+            for (i = 32; i < 58; i++) {
+              DrawButton(&Buttons[i], i + 33 + 32, B_RELEASED);
+            }
+          }
+        }
+      }
+	  
+
+	  if (b == 68) {
+            // space 
+			dn[np] = ' ';
+			np++;
+			DisplayInput();
+			break;
+      }
+      if (b == 71) {
+            // back space 
+			if (np > 0) {
+              --np;
+			  dn[np] = ' ';           
+            }
+			DisplayInput();
+      }
+      if (b == 69) {
+            // done
+			strcpy(data, dn);
+            KeepIn = false;
+			break;
+       }
+       if (b == 70) {
+            // cancel, just get the heck out
+            KeepIn = false;
+			break;
+          }
+	
+      delay(100);
+    }
+  }
+}
+	
+void Keyboard::setInitialText(const char *Text){
+	
+	uint8_t i;
+	
+	for (i = 0; i < (MAX_KEYBOARD_CHARS); i++){
+		inittext[i] = Text[i];
+	}
+	hasinittext = true;
+	
+}
+
+
+void Keyboard::ProcessTouch() {
+
+  if (t->touched()) {
+    p = t->getPoint();
+    BtnX = p.x;
+    BtnY = p.y;
+
+#ifdef debug
+     Serial.print(" real coordinates:");
+     Serial.print(BtnX);
+     Serial.print(" ,");
+     Serial.print (BtnY);
+#endif
+
+    // different displays may require reversing last 2 args
+    BtnX = map(p.x, 300, 3975, 0, 320);
+    BtnY = map(p.y, 304, 3850, 0, 240);
+
+#ifdef debug
+     Serial.print(" , Mapped coordinates:");
+     Serial.print(BtnX);
+     Serial.print(" ,");
+     Serial.println(BtnY);
+    d->fillCircle(BtnX, BtnY, 1, ILI9341_RED);
+#endif
+  }
+}
+
+bool Keyboard::ProcessButtonPress(Button TheButton) {
+
+  if (TheButton.press(BtnX, BtnY)) {
+
+    TheButton.draw(B_PRESSED);
+    while (t->touched()) {
+      if (TheButton.press(BtnX, BtnY)) {
+
+        TheButton.draw(B_PRESSED);
+      } else {
+        TheButton.draw(B_RELEASED);
+        return false;
+      }
+      ProcessTouch();
+    }
+
+    TheButton.draw(B_RELEASED);
+    return true;
+  }
+  return false;
+}
