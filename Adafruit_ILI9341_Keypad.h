@@ -25,7 +25,8 @@
   1.0   2/12/2023      kasprzak      initial code
   1.1   2/21/2023      kasprzak      fixed number overrun issue
   2.0   3/14/2023      kasprzak      fixed fonts for MEGA
-  3.0   10/9/2023      kasprzak      fixed so it compiles on arduing 2.0, added setDecimalPlaces method for controlling float digits
+  3.0   2/23/2024      kasprzak      completely rewrote Keyboard to run on ESP32 (untested on arduino).
+
 
 */
 
@@ -71,9 +72,10 @@
 #define COL9 273
 #define COL10 305
 
-#define MAX_KEYBOARD_CHARS 15
+#define MAX_KEYBOARD_CHARS 10
 
 
+	
 	
 class  NumberPad {
 		
@@ -93,8 +95,6 @@ public:
 	
 	void enableDecimal(bool State);
 	
-	void setDecimalPlaces(uint8_t Places);
-	
 	void enableNegative(bool State);
 	
 	void setDisplayColor(uint16_t TextColor, uint16_t BackColor);
@@ -105,6 +105,7 @@ public:
 	
 	void hideInput();
 	
+	char *getCharValue();
 	
 	void setColors(
 		uint16_t BackColor, 
@@ -129,6 +130,7 @@ private:
 	void ProcessTouch();
 	
 	bool ProcessButtonPress(Button TheButton);
+	uint8_t get_float_digits(float num);
 		
 	uint16_t CW = 160;  // width center of screen
 	uint16_t CH = 120;  // height center of screen
@@ -149,7 +151,6 @@ private:
 	uint16_t ptextcolor;
 	int16_t inputb;
 	int16_t inputt;
-	uint8_t dp = 2;
 	bool decstate = true;
 	bool negstate = true;
 	bool minmaxstate = false;
@@ -157,6 +158,85 @@ private:
 	bool hideinput = false;
 	float minval = 0.0;
 	float maxval = 0.0;
+	
+
+
+};
+
+class  Keyboard {
+		
+public:
+
+	Keyboard(Adafruit_ILI9341 *Display, XPT2046_Touchscreen *Touch);
+
+	void init(uint16_t BackColor,uint16_t ButtonTextColor, uint16_t ButtonColor, uint16_t PressedTextColor, uint16_t PressedButtonColor, const GFXfont *TextFont);
+
+	void getInput();
+	
+	void setDisplayColor(uint16_t TextColor, uint16_t BackColor);
+	
+    char data[MAX_KEYBOARD_CHARS+1];
+	
+	void clearInput();
+
+private:
+
+	struct BUTTON{	
+		uint16_t x;
+		uint16_t y;
+		uint8_t w;
+	};
+
+	Adafruit_ILI9341 *d;
+	XPT2046_Touchscreen  *t;
+	TS_Point p;
+	
+	const GFXfont *f;
+
+	const int Row0 = 24 - 16;
+	const int Row1 = 54 - 8;
+	const int Row2 = 86 - 8;
+	const int Row3 = 118 - 8;
+	const int Row4 = 150 - 8;
+	const int Row5 = 182 - 8;
+	const int Row6 = 214 - 8;
+
+	const int Col1 = 17 - 12;
+	const int Col2 = 49 - 12;
+	const int Col3 = 81 - 12;
+	const int Col4 = 113 - 12;
+	const int Col5 = 145 - 12;
+	const int Col6 = 177 - 12;
+	const int Col7 = 209 - 12;
+	const int Col8 = 241 - 12;
+	const int Col9 = 273 - 12;
+	const int Col10 = 305 - 12;
+
+	void ProcessTouch();
+	char dn[MAX_KEYBOARD_CHARS+1];
+	char inittext[MAX_KEYBOARD_CHARS+1];  // display initial text
+	
+	bool aclear = false;
+	bool hideinput = false;
+	bool hasinittext = false;
+	uint16_t BtnX, BtnY;
+	uint16_t kcolor;
+	uint16_t tcolor; 
+	uint16_t bcolor;
+	uint16_t ptcolor;
+	uint16_t pbcolor;
+	int16_t inputb;
+	int16_t inputt;
+	int8_t Size;
+	bool CapsLock = false;
+	bool ProcessButtonPress(Button TheButton);
+	void BuildButton(BUTTON *temp, int Col, int Row);
+	void BuildButton(BUTTON *temp, int Col, int Row, uint8_t Wide);
+	void DrawButton(BUTTON *temp, uint8_t ASCII, uint8_t State);
+	bool Pressed(BUTTON *temp, uint8_t ASCII);
+	void DisplayInput();
+	void setInitialText(const char *Text);	
+	
 	
 };
 
