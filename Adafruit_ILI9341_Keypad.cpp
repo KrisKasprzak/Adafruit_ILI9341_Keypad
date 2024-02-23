@@ -21,11 +21,6 @@
   On a personal note, if you develop an application or product using this library
   and make millions of dollars, I'm happy for you!
 
-  rev   date      author        change
-  1.0   2/12/2023      kasprzak      initial code
-  1.1   2/21/2023      kasprzak      fixed number overrun issue
-  2.0   2/23/2024      kasprzak      rewroted keyboard to run on ESP32
-
 */
 
 #include "Adafruit_ILI9341_Keypad.h"
