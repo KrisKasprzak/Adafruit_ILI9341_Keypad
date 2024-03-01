@@ -11,10 +11,10 @@ This library includes two classes 1) a class for getting user input using a 0-9 
   <br>
   1.1   2/21/2023      kasprzak      fixed number overrun issue
   <br>
-  2.0   3/14/2023      kasprzak      fixed fonts for MEGA
+  2.0   3/14/2023      kasprzak      fixed fonts for MEGA (number pad, keyboard will not run)
   <br>
-  3.0   10/9/2023      kasprzak      fixed so it compiles on a
-  <br>rduing 2.0, added setDecimalPlaces method for controlling float digits
+  3.0   10/9/2023      kasprzak      fixed so it compiles on a ESP32 (and maybe Arduino)
+
 <br>
 <b><h3>Note: if you are currently using Adafruit_ILI9341_Controls library, make sure you get the latest Adafruit_ILI9341_Controls version 6.0</b></h3>
 <br>
