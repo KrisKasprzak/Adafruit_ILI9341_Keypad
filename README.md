@@ -22,8 +22,6 @@ This library includes two classes 1) a class for getting user input using a 0-9 
 <b>The keyboard library has been tested in an ESP32 and MAY work with an Arduino's.</b>
 <br>
 <br>
-![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/09.jpg)
-<br>
 <br>
 Watch this YouTube Video for a demonstration:
 https://youtu.be/PrSxA_QEzuk
