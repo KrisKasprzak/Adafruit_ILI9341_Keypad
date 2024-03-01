@@ -25,15 +25,14 @@
   1.0   2/12/2023      kasprzak      initial code
   1.1   2/21/2023      kasprzak      fixed number overrun issue
   2.0   3/14/2023      kasprzak      fixed fonts for MEGA
-  3.0   2/23/2024      kasprzak      completely rewrote Keyboard to run on ESP32 (untested on arduino).
-
+  3.0 	3/1/2024       completely rewrote Keyboard to work on ESP32's (maybe arduinos)
 
 */
 
 #ifndef ADAFRUIT_ILI9341_KEYPAD_H
 #define ADAFRUIT_ILI9341_KEYPAD_H
 
-#define ILI9341_KEYPAD_VER 3.0
+#define ILI9341_KEYPAD_VER 1.0
 
 #if ARDUINO >= 100
 	 #include "Arduino.h"
@@ -73,9 +72,6 @@
 #define COL10 305
 
 #define MAX_KEYBOARD_CHARS 10
-
-
-	
 	
 class  NumberPad {
 		
@@ -158,8 +154,6 @@ private:
 	bool hideinput = false;
 	float minval = 0.0;
 	float maxval = 0.0;
-	
-
 
 };
 
