@@ -725,7 +725,7 @@ void Keyboard::getInput() {
 
 
 
-DisplayInput();
+	DisplayInput();
 
 
   // draw numbers
@@ -907,6 +907,7 @@ DisplayInput();
       }
       if (b == 69) {
             // done
+			dn[np] = '\0';
 			strcpy(data, dn);
             KeepIn = false;
 			break;
