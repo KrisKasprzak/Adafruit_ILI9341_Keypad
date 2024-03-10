@@ -13,14 +13,10 @@ This library includes two classes 1) a class for getting user input using a 0-9 
   <br>
   2.0   3/14/2023      kasprzak      fixed fonts for MEGA (number pad, keyboard will not run)
   <br>
-  3.0   10/9/2023      kasprzak      fixed so it compiles on a ESP32 (and maybe Arduino)
+  3.0   3/9/2024      kasprzak      fixed so both numberpad and keyboard on a ESP32 (and maybe Arduino)
 
 <br>
-<b><h3>Note: if you are currently using Adafruit_ILI9341_Controls library, make sure you get the latest Adafruit_ILI9341_Controls version 6.0</b></h3>
-<br>
-<br>
 <b>The keyboard library has been tested in an ESP32 and MAY work with an Arduino's.</b>
-<br>
 <br>
 <br>
 Watch this YouTube Video for a demonstration:
@@ -43,8 +39,6 @@ https://youtu.be/PrSxA_QEzuk
 #include "Adafruit_ILI9341.h"  
 <br>
 #include "font_Arial.h" 
-<br>
-#include "Adafruit_ILI9341_Controls.h"
 <br>
 #include "Adafruit_ILI9341_Keypad.h"
 <br>
@@ -70,7 +64,6 @@ MyNumberPad.init(ILI9341_BLACK, ILI9341_WHITE, ILI9341_BLUE, ILI9341_NAVY, ILI93
   <br>
   // MyNumberPad.setMinMax(float MininumValue, float MaximumValue); // want bound checks?
   <br>
-  // MyNumberPad.setDecimalPlaces(3); // want control over the digits displayed (default is 2)?
   <br>
   // use the value property to set the initial value if desired
   <br>
