@@ -24,7 +24,7 @@ https://youtu.be/PrSxA_QEzuk
 <br>
 <br>
 <b><h3>Library highlights</b></h3>
-1. Simple to implement library
+<li></li>1. Simple to implement library</li>
 2. The number pad can be configured for both colors and button sizes
 3. This class can allow hidden character input for password entry
 4. This class can allow initial instruction text in the input field
@@ -58,6 +58,8 @@ NumberPad MyNumberPad(&Display, &Touch);
 <br>
 MyNumberPad.init(ILI9341_BLACK, ILI9341_WHITE, ILI9341_BLUE, ILI9341_NAVY, ILI9341_WHITE, ILI9341_CYAN, ILI9341_YELLOW, FONT_BUTTON);
 <br>
+MyNumberPad.setTouchLimits(ScreenLeft, ScreenRight, ScreenTop, ScreenBottom); // important to set the screen calibration values
+<br>
   // MyNumberPad.enableDecimal(bool State); // disable / enable decimal point (enabled by default)
   <br>
   // MyNumberPad.enableNegative(bool State); // disable / enable negative sign (enabled by default)
@@ -71,13 +73,13 @@ MyNumberPad.init(ILI9341_BLACK, ILI9341_WHITE, ILI9341_BLUE, ILI9341_NAVY, ILI93
   <br>
   <br>
 
-6. When ready get user input
+7. When ready get user input
 <br>
 MyNumberPad.getInput(); // this will display the key pad control
 <br>
 or
 <br>
-7. Once the user completes input, read the results
+8. Once the user completes input, read the results
 <br>
 Serial.println(MyNumberPad.value);
 <br>
