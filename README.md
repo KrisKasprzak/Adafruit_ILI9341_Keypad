@@ -79,9 +79,7 @@ MyNumberPad.setTouchLimits(ScreenLeft, ScreenRight, ScreenTop, ScreenBottom); //
 <br>
 MyNumberPad.getInput(); // this will display the key pad control
 <br>
-or
-<br>
-8. Once the user completes input, read the results
+8. Once the user completes input (by pressing OK or Cancel, programmer can read the results
 <br>
 Serial.println(MyNumberPad.value);
 <br>
@@ -89,22 +87,13 @@ note that the data type is a float so you will need to recast if an int is desir
 <br>
 Serial.println((int) MyNumberPad.value);
 <br>
-or
-<br>
 <br>
 <b><h3>Caution</b></h3>
 <br>
-If your touch screen is not being mapped to where you pressed you will probably need to adjust the screen mapping in the .cpp file. This mapping is used to account for touch difference in displays. There is a mapping function for both classes. Once you tweak one, the same map can be used for the other.
+If your touch screen is not being mapped to where you pressed you will probably need to adjust the screen limits with the setTouchLimits method.
 <br>
+<b><h3>Example Screenshots (a bit outdated)</b></h3>
 <br>
-BtnX = map(p.x, 3975, 169, 0, 320);
-<br>
-BtnY = map(p.y, 3850, 304, 0, 240);    
-<br>
-<b><h3>Example Screenshots</b></h3>
-<br>
-<br>
-
 <br>
 
 ![header image](https://raw.github.com/KrisKasprzak/Adafruit_ILI9341_Keypad/master/Images/03.jpg)
