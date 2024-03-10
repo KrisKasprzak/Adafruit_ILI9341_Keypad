@@ -13,7 +13,7 @@ This library includes two classes 1) a class for getting user input using a 0-9 
   <br>
   2.0   3/14/2023      kasprzak      fixed fonts for MEGA (number pad, keyboard will not run)
   <br>
-  3.0   3/9/2024      kasprzak      fixed so both numberpad and keyboard on a ESP32 (and maybe Arduino)
+  3.0   3/9/2024      kasprzak      fixed so both numberpad and keyboard on a ESP32 (and maybe now Arduinos will run)
 
 <br>
 <b>The keyboard library has been tested in an ESP32 and MAY work with an Arduino's.</b>
@@ -31,6 +31,7 @@ https://youtu.be/PrSxA_QEzuk
 <li>This class can allow a predefined input value</li>
 <li>The number input can handle decimal and negative number inputs and can enable or disabled</li>
 <li>The library handles button presses, hence why you pass in the Touch object</li>
+<li>The library consumes approx. 16K memory</li>
 
 <b><h3>General implementation</b></h3>
 <br>
