@@ -1,5 +1,5 @@
 # Numberpad and Keyboard for the Adafruit_ILI9341 and XPT2046_Touchscreen Libraries
-This library includes two classes 1) a class for getting user input using a 0-9 digit and 2) a full keyboard. This library is for the Adafruit_ILI9341 driver to drive common 2.8" LCD displays, and also requires touch screen capability.  This library is dependent on 1) Adafruit_ILI9341, 2) XPT2046_Touchscreen, and 3) Adafruit_ILI9341_Controls libraries.
+This library includes two classes 1) a class for getting user input using a 0-9 digit and 2) a full keyboard. This library is for the Adafruit_ILI9341 driver to drive common 2.8" LCD displays, and also requires touch screen capability.  This library is dependent on 1) Adafruit_ILI9341, 2) XPT2046_Touchscreen libraries.
 
 <b><h3> Latest version 3.0</b></h3>
 <br>
