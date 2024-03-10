@@ -60,12 +60,14 @@ MyNumberPad.init(ILI9341_BLACK, ILI9341_WHITE, ILI9341_BLUE, ILI9341_NAVY, ILI93
 <br>
 MyNumberPad.setTouchLimits(ScreenLeft, ScreenRight, ScreenTop, ScreenBottom); // important to set the screen calibration values
 <br>
+ <br>
+// optional methods
+ <br>
   // MyNumberPad.enableDecimal(bool State); // disable / enable decimal point (enabled by default)
   <br>
   // MyNumberPad.enableNegative(bool State); // disable / enable negative sign (enabled by default)
   <br>
   // MyNumberPad.setMinMax(float MininumValue, float MaximumValue); // want bound checks?
-  <br>
   <br>
   // use the value property to set the initial value if desired
   <br>
