@@ -56,7 +56,7 @@ NumberPad MyNumberPad(&Display, &Touch);
 <br>
 5. In setup, initialize the object, and optionally specify any options
 <br>
-MyNumberPad.init(ILI9341_BLACK, ILI9341_WHITE, ILI9341_BLUE, ILI9341_NAVY, ILI9341_WHITE, ILI9341_CYAN, ILI9341_YELLOW, FONT_BUTTON);
+MyNumberPad.init(back color, button text color, button color, button pressed text color, button pressed color, & Adafruit_GFX font name);
 <br>
 MyNumberPad.setTouchLimits(ScreenLeft, ScreenRight, ScreenTop, ScreenBottom); // important to set the screen calibration values
 <br>
