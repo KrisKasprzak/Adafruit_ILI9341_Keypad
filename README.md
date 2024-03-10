@@ -24,13 +24,13 @@ https://youtu.be/PrSxA_QEzuk
 <br>
 <br>
 <b><h3>Library highlights</b></h3>
-<li></li>1. Simple to implement library</li>
-2. The number pad can be configured for both colors and button sizes
-3. This class can allow hidden character input for password entry
-4. This class can allow initial instruction text in the input field
-5. This class can allow a predefined input 
-6. The number input can handle decimal and negative number inputs and can enable or disabled
-7. The library handles button presses, hence why you pass in the Touch object
+<li>Simple to implement library</li>
+<li>The number pad can be configured for inpput colors</li>
+<li>This class can allow hidden character input for password entry</li>
+<li>This class can allow initial instruction text in the input field</li>
+<li>This class can allow a predefined input value</li>
+<li>The number input can handle decimal and negative number inputs and can enable or disabled</li>
+<li>The library handles button presses, hence why you pass in the Touch object</li>
 
 <b><h3>General implementation</b></h3>
 <br>
