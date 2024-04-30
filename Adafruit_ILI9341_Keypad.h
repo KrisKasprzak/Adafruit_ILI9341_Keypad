@@ -103,6 +103,8 @@ public:
 	
 	void setMinMax(float MininumValue, float MaximumValue);
 	
+	void setCornerRadius(uint8_t Radius);
+	
 	void setInitialText(const char *Text);
 	
 	void hideInput();
