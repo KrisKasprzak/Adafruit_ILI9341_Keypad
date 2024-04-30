@@ -49,6 +49,8 @@ void NumberPad::init(uint16_t BackColor,
   f = ButtonFont;
   bHigh = 40;
   bWide = 40;
+  rad = 0;
+  
 
   // in this class we are NOT initially writing to the char[0] as it's reserved for the - sign
   // hence we need to populate it to eliminate null terminator
@@ -101,6 +103,13 @@ void NumberPad::setMinMax(float MininumValue, float MaximumValue) {
 
   minval = MininumValue;
   maxval = MaximumValue;
+}
+
+void NumberPad::setCornerRadius(uint8_t Radius) {
+  rad = Radius;
+  if (Radius > 10) {
+    rad = 10;
+  }
 }
 
 void NumberPad::setInitialText(const char *Text) {
@@ -172,7 +181,8 @@ void NumberPad::getInput() {
   memset(hc, '\0', MAX_KEYBOARD_CHARS + 2);
   hc[0] = ' ';
 
-  // get the decimals
+
+	
   if (value != 0.0) {
 
     // odd but force negative to get the place holder for the sign [0]
@@ -182,8 +192,8 @@ void NumberPad::getInput() {
       value = value * -1.0;
     }
 
-    gcvt(value, 7, dn);
-
+    // gcvt(value, 7, dn);
+  	int ret = snprintf(dn, sizeof dn, "%f", value);
     if (!hasneg) {
       value = value * -1.0;
       dn[0] = ' ';
@@ -191,15 +201,34 @@ void NumberPad::getInput() {
 
     np = strlen(dn);  // account for possible sign
   }
-  
-  for (i = 0; i < strlen(dn); i++){
-	  
-	  if(dn[i] == '.'){
-		  hasDP = true;
-		  break;
+	
+    // get the decimals
+	  for (i = 0; i < strlen(dn); i++){
+		  
+		  if(dn[i] == '.'){
+			  hasDP = true;
+			  break;
+		  }
 	  }
-  }
-  	
+
+	// strip trailing zeros
+	if (hasDP) {
+		
+		for ( i = strlen(dn)-1; i > 0; i--) {
+					
+			if (dn[i] == '.'){
+				break;
+			}
+			else if (dn[i] == '0'){
+				dn[i] = '\0';
+				np--;
+			}
+			else {
+				break;
+			}
+		}
+	}
+	
   if (hideinput){
 	  hc[0] = ' ';
     for (i = 1; i < strlen(dn); i++){	  
@@ -551,7 +580,7 @@ void Keyboard::init(uint16_t BackColor, uint16_t ButtonTextColor, uint16_t Butto
   inputt = ButtonColor;
   Size = 30;
   f = TextFont;
-
+  rad = 0;
   screenX0 = 185, screenX320 = 3755, screenY0 = 350, screenY240 = 3785;
 }
 
