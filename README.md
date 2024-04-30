@@ -13,6 +13,8 @@ This library includes two classes 1) a class for getting user input using a 0-9 
   2.0   3/14/2023      kasprzak      fixed fonts for MEGA (number pad, keyboard will not run)
   <br>
   3.0   3/9/2024      kasprzak      fixed so both numberpad and keyboard on a ESP32 (and maybe now Arduinos will run)
+  <br>
+  4.0   4/30/2024     kasprzak      fixed so both numberpad and keyboard on a ESP32 (and maybe now Arduinos will run)
 <br>
 <b>The keyboard library has been tested in an ESP32 and MAY work with an Arduino's.</b>
 <br>
