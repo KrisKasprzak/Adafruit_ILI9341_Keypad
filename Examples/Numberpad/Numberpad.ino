@@ -4,12 +4,12 @@
 #include "XPT2046_Touchscreen.h"
 #include "Adafruit_ILI9341_Keypad.h"
 
-#define T_CS 12
-#define T_IRQ 27
-#define TFT_DC 2
-#define TFT_CS 5
-#define TFT_RST 25
-#define PIN_LED 26
+#define T_CS 22
+#define T_IRQ 15
+#define TFT_DC 21
+#define TFT_CS 2
+#define TFT_RST 5
+#define PIN_LED 4
 
 // easy way to include fonts but change globally
 #define FONT_BUTTON FreeSans12pt7b  // font for keypad buttons
@@ -36,10 +36,10 @@ void setup() {
   // fire up the display
   Display.begin();
 
-  Display.setRotation(1);
+  Display.setRotation(3);
 
   Touch.begin();
-  Touch.setRotation(1);
+  Touch.setRotation(3);
 
   // pin to set display brightness
   ledcSetup(0, 5000, 8);
@@ -59,19 +59,20 @@ void setup() {
 
   // optional methods
   MyNumberPad.setDisplayColor(ILI9341_CYAN, ILI9341_DARKGREY);
-  // MyNumberPad.useButtonIcon(true); // want icons for action buttons? omit call or false for text.
-  MyNumberPad.enableDecimal();   // disable / enable decimal point (enabled by default)
-  MyNumberPad.enableNegative();  // disable / enable negative sign (enabled by default)
+  MyNumberPad.useButtonIcon(true);  // want icons for action buttons? omit call or false for text.
+  MyNumberPad.enableDecimal();      // disable / enable decimal point (enabled by default)
+  MyNumberPad.enableNegative();     // disable / enable negative sign (enabled by default)
+  MyNumberPad.setCornerRadius(5); 
   // MyNumberPad.setMinMax(3, 300); // want bounds checks (disables OK button if out of range)?
   // use the value property to set the initial value if desired
   // MyNumberPad.setInitialText("Height?");
-  // MyNumberPad.value = 3.14159; // set initial value
+  MyNumberPad.value = 3.14159; // set initial value
   // MyNumberPad.hideInput();
 }
 
 void loop() {
 
-  Display.fillScreen(ILI9341_RED);
+  Display.fillScreen(ILI9341_BLACK);
   MyNumberPad.getInput();
   
   Serial.print("Entered value ");
