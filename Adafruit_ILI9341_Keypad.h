@@ -26,13 +26,14 @@
   1.1   2/21/2023      kasprzak      fixed number overrun issue
   2.0   3/14/2023      kasprzak      fixed fonts for MEGA
   3.0   3/14/2024      kasprzak      complete rewrite to support ESP32
+  4.0   4/30/2024      kasprzak      added rouded corners fixed trailing zero display
 
 */
 
 #ifndef ADAFRUIT_ILI9341_KEYPAD_H
 #define ADAFRUIT_ILI9341_KEYPAD_H
 
-#define ILI9341_KEYPAD_VER 1.0
+#define ADAFRUIT_ILI9341_KEYPAD_VER 4.0
 
 #if ARDUINO >= 100
 	 #include "Arduino.h"
