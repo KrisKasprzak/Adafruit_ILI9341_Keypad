@@ -127,39 +127,6 @@ void NumberPad::hideInput() {
   hideinput = true;
 }
 
-uint8_t NumberPad::get_float_digits(float num) {
-  int digits = 0;
-  float ori = num;  //storing original number
-  long num2 = num;
-  while (num2 > 0)  //count no of digits before floating point
-  {
-    digits++;
-    num2 = num2 / 10;
-  }
-  if (ori == 0)
-    digits = 1;
-  num = ori;
-  float no_float;
-  no_float = ori * (pow(10, (8 - digits)));
-  long long int total = (long long int)no_float;
-  int no_of_digits, extrazeroes = 0;
-  for (int i = 0; i < 8; i++) {
-    int dig;
-    dig = total % 10;
-    total = total / 10;
-    if (dig != 0)
-      break;
-    else
-      extrazeroes++;
-  }
-  no_of_digits = 8 - extrazeroes;
-  if (((long)num) != num) {
-    // has decimal
-    // no_of_digits++;
-  }
-  return no_of_digits;
-}
-
 void NumberPad::getInput() {
 
   uint16_t i = 0;
@@ -170,12 +137,7 @@ void NumberPad::getInput() {
   bool hasneg = false;
   bool KeepIn = true;
   float TheNumber = 0.0;
-   
-
- // if (value != 0) {
- //   hasinittext = true;
- // }
-  
+    
   memset(dn, '\0', MAX_KEYBOARD_CHARS + 2);
   dn[0] = ' ';
   memset(hc, '\0', MAX_KEYBOARD_CHARS + 2);
@@ -192,14 +154,14 @@ void NumberPad::getInput() {
       value = value * -1.0;
     }
 
-    // gcvt(value, 7, dn);
+    // give blank space for possible sign input
   	int ret = snprintf(dn, sizeof dn, "%f", value);
     if (!hasneg) {
       value = value * -1.0;
       dn[0] = ' ';
     }
 
-    np = strlen(dn);  // account for possible sign
+    np = strlen(dn); 
   }
 	
     // get the decimals
@@ -217,7 +179,9 @@ void NumberPad::getInput() {
 		for ( i = strlen(dn)-1; i > 0; i--) {
 					
 			if (dn[i] == '.'){
-				break;
+				dn[i] = '\0';
+				np--;
+				hasDP = false;
 			}
 			else if (dn[i] == '0'){
 				dn[i] = '\0';
@@ -691,9 +655,19 @@ void Keyboard::DisplayInput() {
   if (hasinittext) {
     d->print(inittext);
   } else {
-    d->print(dn);
+      if (hideinput) {
+        d->print(hc);
+      } else {
+        d->print(dn);
+      }
   }
 }
+
+void Keyboard::hideInput() {
+
+  hideinput = true;
+}
+
 
 void Keyboard::setCornerRadius(uint8_t Radius) {
   rad = Radius;
@@ -715,11 +689,21 @@ void Keyboard::getInput() {
   bool KeepIn = true;
   bool found = false;
   memset(dn, '\0', MAX_KEYBOARD_CHARS + 1);
+  memset(hc, '\0', MAX_KEYBOARD_CHARS + 2);
+
+strcpy(dn, data);
 
   if (strlen(data) > 0) {
     strcpy(dn, data);
     np = strlen(dn);
   }
+  
+    if (hideinput){
+		for (i = 0; i < strlen(dn); i++){	  
+		  hc[i] = '*';
+		}
+	}
+  
 
   BUTTON Buttons[74];
 
@@ -833,7 +817,9 @@ void Keyboard::getInput() {
         found = false;
         for (b = 0; b < 15; b++) {
           if (Pressed(&Buttons[b], b + 33)) {
-            dn[np++] = (char)(b + 33);
+            dn[np] = (char)(b + 33);
+			hc[np] = '*';
+			np++;
             DisplayInput();
             found = true;
             break;
@@ -841,7 +827,9 @@ void Keyboard::getInput() {
         }
         for (b = 25; b < 32; b++) {
           if (Pressed(&Buttons[b], b + 33) && !found) {
-            dn[np++] = (char)(b + 33);
+            dn[np] = (char)(b + 33);
+			hc[np] = '*';
+			np++;
             DisplayInput();
             found = true;
             break;
@@ -849,7 +837,9 @@ void Keyboard::getInput() {
         }
         for (b = 58; b < 66; b++) {
           if (Pressed(&Buttons[b], b + 33) && !found) {
-            dn[np++] = (char)(b + 33);
+            dn[np] = (char)(b + 33);
+			hc[np] = '*';
+			np++;
             DisplayInput();
             found = true;
             break;
@@ -857,7 +847,9 @@ void Keyboard::getInput() {
         }
         for (b = 58; b < 64; b++) {
           if (Pressed(&Buttons[b], b + 33) && !found) {
-            dn[np++] = (char)(b + 33);
+            dn[np] = (char)(b + 33);
+			hc[np] = '*';
+			np++;
             DisplayInput();
             found = true;
             break;
@@ -865,7 +857,9 @@ void Keyboard::getInput() {
         }
         for (b = 64; b < 68; b++) {
           if (Pressed(&Buttons[b], b + 33 + 26) && !found) {
-            dn[np++] = (char)(b + 33 + 26);
+            dn[np] = (char)(b + 33 + 26);
+			hc[np] = '*';
+			np++;
             DisplayInput();
             found = true;
             break;
@@ -876,7 +870,9 @@ void Keyboard::getInput() {
         // check numbers
         for (b = 15; b < 25; b++) {
           if (Pressed(&Buttons[b], b + 33) && !found) {
-            dn[np++] = (char)(b + 33);
+            dn[np] = (char)(b + 33);
+			hc[np] = '*';
+			np++;
             DisplayInput();
             found = true;
             break;
@@ -886,14 +882,18 @@ void Keyboard::getInput() {
         for (b = 32; b < 58; b++) {
           if (CapsLock) {
             if (Pressed(&Buttons[b], b + 33) && !found) {
-              dn[np++] = (char)(b + 33);
+              dn[np] = (char)(b + 33);
+			  hc[np] = '*';
+			  np++;
               DisplayInput();
               found = true;
               break;
             }
           } else {
             if (Pressed(&Buttons[b], b + 33 + 32) && !found) {
-              dn[np++] = (char)(b + 33 + 32);
+              dn[np] = (char)(b + 33 + 32);
+			  hc[np] = '*';
+			  np++;
               DisplayInput();
               found = true;
               break;
@@ -966,6 +966,7 @@ void Keyboard::getInput() {
       if (b == 68) {
         // space
         dn[np] = ' ';
+		hc[np] = '*';
         np++;
         DisplayInput();
         break;
@@ -973,14 +974,17 @@ void Keyboard::getInput() {
       if (b == 71) {
         // back space
         if (np > 0) {
+			 
           --np;
           dn[np] = ' ';
+		 hc[np] = ' ';
         }
         DisplayInput();
       }
       if (b == 69) {
         // done
         dn[np] = '\0';
+		
         strcpy(data, dn);
         KeepIn = false;
         break;
@@ -994,6 +998,7 @@ void Keyboard::getInput() {
       delay(10);
     }
   }
+    
 }
 
 void Keyboard::setInitialText(const char *Text) {
