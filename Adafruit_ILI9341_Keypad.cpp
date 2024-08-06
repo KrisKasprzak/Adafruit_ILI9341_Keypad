@@ -488,7 +488,7 @@ bool NumberPad::Pressed(BUTTON *temp) {
     if ((BtnY > temp->y) && (BtnY < (temp->y + temp->h))) {
 
 	if (clickpin > 0) {
-	analogWrite(clickpin, 50);
+	analogWrite(clickpin, 60);
 	delay(5);
 	analogWrite(clickpin, 0);
 	}
@@ -654,7 +654,7 @@ bool Keyboard::Pressed(BUTTON *temp, uint8_t ASCII) {
   if ((BtnX > temp->x) && (BtnX < (temp->x + (Size * temp->w)))) {
     if ((BtnY > temp->y) && (BtnY < (temp->y + Size))) {
 	if (clickpin > 0) {
-	  analogWrite(clickpin, 127);
+	  analogWrite(clickpin, 60);
 	  delay(5);
 	  analogWrite(clickpin, 0);
 	}
