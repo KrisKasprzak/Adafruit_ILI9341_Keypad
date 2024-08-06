@@ -50,7 +50,8 @@ void NumberPad::init(uint16_t BackColor,
   bHigh = 40;
   bWide = 40;
   rad = 0;
-  
+  numdec = 3;
+  +clickpin = -1;
 
   // in this class we are NOT initially writing to the char[0] as it's reserved for the - sign
   // hence we need to populate it to eliminate null terminator
@@ -127,6 +128,18 @@ void NumberPad::hideInput() {
   hideinput = true;
 }
 
+void NumberPad::setDecimals(uint8_t Value) {
+
+numdec = Value;
+
+}
+
+void NumberPad::setClickPin(int Value) {
+
+clickpin = Value;
+
+}
+
 void NumberPad::getInput() {
 
   uint16_t i = 0;
@@ -142,26 +155,39 @@ void NumberPad::getInput() {
   dn[0] = ' ';
   memset(hc, '\0', MAX_KEYBOARD_CHARS + 2);
   hc[0] = ' ';
-
-
 	
   if (value != 0.0) {
 
-    // odd but force negative to get the place holder for the sign [0]
-    if (value < 0) {
-      hasneg = true;
-    } else {
-      value = value * -1.0;
-    }
+	// odd but force negative to get the place holder for the sign [0]
+	if (value < 0) {
+		hasneg = true;
+	} else {
+		value = value * -1.0;
+	}
 
-    // give blank space for possible sign input
-  	int ret = snprintf(dn, sizeof dn, "%f", value);
-    if (!hasneg) {
-      value = value * -1.0;
-      dn[0] = ' ';
-    }
-
-    np = strlen(dn); 
+	if (numdec== 0){
+		sprintf(dn, "%d", (int) value);
+	}
+	else if (numdec == 1) {
+		sprintf(dn, "%0.1f",  value);	
+	}
+	else if (numdec == 2) {
+		sprintf(dn, "%0.2f",  value);	
+	}
+	else if (numdec == 3) {
+		sprintf(dn, "%0.3f",  value);	
+	}
+	else if (numdec == 4) {
+		sprintf(dn, "%0.4f",  value);	
+	}
+	else  {
+		sprintf(dn, "%0.5f",  value);	
+	}
+	if (!hasneg) {
+		value = value * -1.0;
+		dn[0] = ' ';
+	}
+	np = strlen(dn); 
   }
 	
     // get the decimals
@@ -460,6 +486,12 @@ bool NumberPad::Pressed(BUTTON *temp) {
 	
   if ((BtnX > temp->x) && (BtnX < (temp->x + temp->w))) {
     if ((BtnY > temp->y) && (BtnY < (temp->y + temp->h))) {
+
+	if (clickpin > 0) {
+	analogWrite(clickpin, 50);
+	delay(5);
+	analogWrite(clickpin, 0);
+	}
       while (t->touched()) {
         if (((BtnX > temp->x) && (BtnX < (temp->x + temp->w))) && ((BtnY > temp->y) && (BtnY < (temp->y + temp->h)))) {
           if (redraw) {
@@ -545,6 +577,7 @@ void Keyboard::init(uint16_t BackColor, uint16_t ButtonTextColor, uint16_t Butto
   Size = 30;
   f = TextFont;
   rad = 0;
+  clickpin = -1;
   screenX0 = 185, screenX320 = 3755, screenY0 = 350, screenY240 = 3785;
 }
 
@@ -570,6 +603,11 @@ void Keyboard::BuildButton(BUTTON *temp, int Col, int Row, uint8_t Wide) {
   temp->w = Wide;
 }
 
+void Keyboard::setClickPin(int Value) {
+
+	clickpin = Value;
+
+}
 void Keyboard::DrawButton(BUTTON *temp, uint8_t ASCII, uint8_t State) {
 
 
@@ -615,7 +653,11 @@ bool Keyboard::Pressed(BUTTON *temp, uint8_t ASCII) {
 
   if ((BtnX > temp->x) && (BtnX < (temp->x + (Size * temp->w)))) {
     if ((BtnY > temp->y) && (BtnY < (temp->y + Size))) {
-
+	if (clickpin > 0) {
+	  analogWrite(clickpin, 127);
+	  delay(5);
+	  analogWrite(clickpin, 0);
+	}
       while (t->touched()) {
         if (((BtnX > temp->x) && (BtnX < (temp->x + (Size * temp->w)))) && ((BtnY > temp->y) && (BtnY < (temp->y + Size)))) {
           if (redraw) {
