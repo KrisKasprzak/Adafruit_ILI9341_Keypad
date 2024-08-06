@@ -27,13 +27,14 @@
   2.0   3/14/2023      kasprzak      fixed fonts for MEGA
   3.0   3/14/2024      kasprzak      complete rewrite to support ESP32
   4.0   4/30/2024      kasprzak      added corner rounding added trailing zero removal
-
+  5.0   7/14/2024      kasprzak      added support for audible click when button pressed (requires hardward buzzer)
+				     added support to specify decimal places	
 */
 
 #ifndef ADAFRUIT_ILI9341_KEYPAD_H
 #define ADAFRUIT_ILI9341_KEYPAD_H
 
-#define ILI9341_KEYPAD_VER 4.0
+#define ADAFRUIT_ILI9341_KEYPAD_VER 5.0
 
 #if ARDUINO >= 100
 	 #include "Arduino.h"
@@ -97,7 +98,11 @@ public:
 	void setButtonSizes(uint16_t ButtonWidth, uint16_t ButtonHeight, uint16_t Margins, uint16_t OKButtonWidth, uint16_t OKButtonHeight);
 	
 	void enableDecimal(bool State = true);
+
+	void setDecimals(uint8_t Value);
 	
+	void setClickPin(int Value);
+
 	void enableNegative(bool State = true);
 	
 	void setDisplayColor(uint16_t TextColor, uint16_t BackColor);
@@ -185,6 +190,9 @@ private:
 	float minval = 0.0;
 	float maxval = 0.0;
 	bool rangeOK = true;
+	uint8_t numdec = 3;
+	int clickpin = -1;
+
 	// 'Check', 50x50px
 	const unsigned char check [350] PROGMEM = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x80, 0x00, 0x00, 
@@ -276,7 +284,9 @@ public:
 	void getInput();
 	
 	void setCornerRadius(uint8_t Radius);
-	
+
+        void setClickPin(int Value);
+
 	void setDisplayColor(uint16_t TextColor, uint16_t BackColor);
 	
     char data[MAX_KEYBOARD_CHARS+1];
@@ -340,7 +350,7 @@ private:
 	uint8_t rad;
 	int16_t screenX0, screenX320;
 	int16_t screenY0, screenY240;
-	
+	int clickpin;
 	int8_t Size;
 	bool CapsLock = false;
 
