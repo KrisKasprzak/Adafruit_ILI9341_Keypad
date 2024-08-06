@@ -51,7 +51,7 @@ void NumberPad::init(uint16_t BackColor,
   bWide = 40;
   rad = 0;
   numdec = 3;
-  +clickpin = -1;
+  clickpin = -1;
 
   // in this class we are NOT initially writing to the char[0] as it's reserved for the - sign
   // hence we need to populate it to eliminate null terminator
