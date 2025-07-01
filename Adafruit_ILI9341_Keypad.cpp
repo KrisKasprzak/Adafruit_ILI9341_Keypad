@@ -146,7 +146,6 @@ void NumberPad::getInput() {
   uint16_t b = 0;
   bool hasDP = false;
   uint8_t np = 1;  // digit number
-  bool CanBackUp = false;
   bool hasneg = false;
   bool KeepIn = true;
   float TheNumber = 0.0;
@@ -281,7 +280,7 @@ void NumberPad::getInput() {
           //valid number
           if (b <= 9) {
 
-            if (np > MAX_KEYBOARD_CHARS) {
+            if (np > (MAX_KEYBOARD_CHARS-1)) {
 
               break;
             }
@@ -295,7 +294,6 @@ void NumberPad::getInput() {
               hc[np] = '*';
               np++;
             }
-            CanBackUp = true;
           } else if (b == 11) {
             //negative number
             if (dn[0] == '-') {
@@ -313,7 +311,6 @@ void NumberPad::getInput() {
             }
           } else if (b == 12) {
             // back space
-            CanBackUp = false;
             if (np > 1) {
               --np;
               if (dn[np] == '.') { hasDP = false; }
@@ -486,7 +483,7 @@ bool NumberPad::Pressed(BUTTON *temp) {
 	
   if ((BtnX > temp->x) && (BtnX < (temp->x + temp->w))) {
     if ((BtnY > temp->y) && (BtnY < (temp->y + temp->h))) {
-
+delay(50);
 	if (clickpin > 0) {
 	analogWrite(clickpin, 60);
 	delay(5);
@@ -653,6 +650,7 @@ bool Keyboard::Pressed(BUTTON *temp, uint8_t ASCII) {
 
   if ((BtnX > temp->x) && (BtnX < (temp->x + (Size * temp->w)))) {
     if ((BtnY > temp->y) && (BtnY < (temp->y + Size))) {
+		delay(50);
 	if (clickpin > 0) {
 	  analogWrite(clickpin, 60);
 	  delay(5);
@@ -849,11 +847,10 @@ strcpy(dn, data);
 
   while (KeepIn) {
 
-    if (t->touched()) {
+    if (t->touched() && (np < MAX_KEYBOARD_CHARS)) {
 
       ProcessTouch();
       //go thru all the KeyboardBtn, checking if they were pressed
-
 
       if (SpecialChar) {
         found = false;
@@ -1081,4 +1078,3 @@ void Keyboard::ProcessTouch() {
 #endif
   }
 }
-
