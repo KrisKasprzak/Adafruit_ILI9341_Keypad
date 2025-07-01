@@ -6,15 +6,22 @@ This library includes two classes 1) a class for getting user input using a 0-9 
 <br>
   rev   date      author        change
   <br>
+  rev   date      author        change
+   <br>
   1.0   2/12/2023      kasprzak      initial code
-  <br>
-  1.1   2/21/2023      kasprzak      fixed number overrun issue
-  <br>
-  2.0   3/14/2023      kasprzak      fixed fonts for MEGA (number pad, keyboard will not run)
-  <br>
-  3.0   3/9/2024      kasprzak      fixed so both numberpad and keyboard on a ESP32 (and maybe now Arduinos will run)
-  <br>
+   <br>
+   1.1   2/21/2023      kasprzak      fixed number overrun issue
+    <br>
+  2.0   3/14/2023      kasprzak      fixed fonts for MEGA
+   <br>
+  3.0   3/14/2024      kasprzak      complete rewrite to support ESP32
+   <br>
   4.0   4/30/2024      kasprzak      added corner rounding added trailing zero removal
+   <br>
+  5.0   7/14/2024      kasprzak      added support for audible click when button pressed (requires hardward buzzer)
+										added support to specify decimal places	
+   <br>
+  6.0   7/14/2024      kasprzak 	updated to work with Teensy 4.0 (removed PROGMEM)
 <br>
 <b>The keyboard library has been tested in an ESP32 and MAY work with an Arduino's.</b>
 <br>
