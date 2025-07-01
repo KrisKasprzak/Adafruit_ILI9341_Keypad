@@ -115,11 +115,7 @@ void NumberPad::setCornerRadius(uint8_t Radius) {
 
 void NumberPad::setInitialText(const char *Text) {
 
-  uint8_t i;
-
-  for (i = 0; i < (MAX_KEYBOARD_CHARS); i++) {
-    inittext[i] = Text[i];
-  }
+  strncpy(inittext, Text,39);
   hasinittext = true;
 }
 
@@ -687,20 +683,16 @@ void Keyboard::DisplayInput() {
 
 
   d->fillRect(Col1, Row0, Col10 + (2 * 9), Size, inputt);
-  d->setCursor(Col1 + 5, Row0 + 25);
+  d->setCursor(Col1 + 5, Row0 + 20);
   d->setFont(f);
   d->setTextColor(inputb, inputt);
 
-
-  if (hasinittext) {
-    d->print(inittext);
+  if (hideinput) {
+	d->print(hc);
   } else {
-      if (hideinput) {
-        d->print(hc);
-      } else {
-        d->print(dn);
-      }
+	d->print(dn);
   }
+
 }
 
 void Keyboard::hideInput() {
@@ -728,10 +720,10 @@ void Keyboard::getInput() {
   bool SpecialChar = false;
   bool KeepIn = true;
   bool found = false;
-  memset(dn, '\0', MAX_KEYBOARD_CHARS + 1);
+  memset(dn, '\0', MAX_KEYBOARD_CHARS + 2);
   memset(hc, '\0', MAX_KEYBOARD_CHARS + 2);
 
-strcpy(dn, data);
+	strcpy(dn, data);
 
   if (strlen(data) > 0) {
     strcpy(dn, data);
@@ -744,7 +736,6 @@ strcpy(dn, data);
 		}
 	}
   
-
   BUTTON Buttons[74];
 
   BuildButton(&Buttons[0], Col1, Row1);      //,  "!");
@@ -824,6 +815,14 @@ strcpy(dn, data);
 
   DisplayInput();
 
+	if (hasinittext){
+	  d->fillRect(Col1, Row0, Col10 + (2 * 9), Size, inputt);
+	  d->setCursor(Col1 + 5, Row0 + 20);
+	  d->setFont(f);
+	  d->setTextColor(inputb, inputt);	
+	  d->print(inittext);
+	}  
+
   // draw numbers
   for (i = 15; i < 25; i++) {
     DrawButton(&Buttons[i], i + 33, BUTTON_RELEASED);
@@ -847,98 +846,103 @@ strcpy(dn, data);
 
   while (KeepIn) {
 
-    if (t->touched() && (np < MAX_KEYBOARD_CHARS)) {
+    if (t->touched()) {
 
       ProcessTouch();
       //go thru all the KeyboardBtn, checking if they were pressed
 
       if (SpecialChar) {
-        found = false;
-        for (b = 0; b < 15; b++) {
-          if (Pressed(&Buttons[b], b + 33)) {
-            dn[np] = (char)(b + 33);
-			hc[np] = '*';
-			np++;
-            DisplayInput();
-            found = true;
-            break;
-          }
-        }
-        for (b = 25; b < 32; b++) {
-          if (Pressed(&Buttons[b], b + 33) && !found) {
-            dn[np] = (char)(b + 33);
-			hc[np] = '*';
-			np++;
-            DisplayInput();
-            found = true;
-            break;
-          }
-        }
-        for (b = 58; b < 66; b++) {
-          if (Pressed(&Buttons[b], b + 33) && !found) {
-            dn[np] = (char)(b + 33);
-			hc[np] = '*';
-			np++;
-            DisplayInput();
-            found = true;
-            break;
-          }
-        }
-        for (b = 58; b < 64; b++) {
-          if (Pressed(&Buttons[b], b + 33) && !found) {
-            dn[np] = (char)(b + 33);
-			hc[np] = '*';
-			np++;
-            DisplayInput();
-            found = true;
-            break;
-          }
-        }
-        for (b = 64; b < 68; b++) {
-          if (Pressed(&Buttons[b], b + 33 + 26) && !found) {
-            dn[np] = (char)(b + 33 + 26);
-			hc[np] = '*';
-			np++;
-            DisplayInput();
-            found = true;
-            break;
-          }
-        }
+		if (np < MAX_KEYBOARD_CHARS){
+			found = false;
+			for (b = 0; b < 15; b++) {
+			  if (Pressed(&Buttons[b], b + 33)) {
+				dn[np] = (char)(b + 33);
+				hc[np] = '*';
+				np++;
+				DisplayInput();
+				found = true;
+				break;
+			  }
+			}
+			for (b = 25; b < 32; b++) {			
+			  if (Pressed(&Buttons[b], b + 33) && !found) {
+				dn[np] = (char)(b + 33);
+				hc[np] = '*';
+				np++;
+				DisplayInput();
+				found = true;
+				break;
+			  }
+			}
+			for (b = 58; b < 66; b++) {
+		
+			  if (Pressed(&Buttons[b], b + 33) && !found) {
+				dn[np] = (char)(b + 33);
+				hc[np] = '*';
+				np++;
+				DisplayInput();
+				found = true;
+				break;
+			  }
+			}
+			for (b = 58; b < 64; b++) {
+			  if (Pressed(&Buttons[b], b + 33) && !found) {
+				dn[np] = (char)(b + 33);
+				hc[np] = '*';
+				np++;
+				DisplayInput();
+				found = true;
+				break;
+			  }
+			}
+			for (b = 64; b < 68; b++) {			
+			  if (Pressed(&Buttons[b], b + 33 + 26) && !found) {
+				dn[np] = (char)(b + 33 + 26);
+				hc[np] = '*';
+				np++;
+				DisplayInput();
+				found = true;
+				break;
+			  }
+			}
+		  }
       } else {
-        found = false;
-        // check numbers
-        for (b = 15; b < 25; b++) {
-          if (Pressed(&Buttons[b], b + 33) && !found) {
-            dn[np] = (char)(b + 33);
-			hc[np] = '*';
-			np++;
-            DisplayInput();
-            found = true;
-            break;
-          }
-        }
-        // check letters
-        for (b = 32; b < 58; b++) {
-          if (CapsLock) {
-            if (Pressed(&Buttons[b], b + 33) && !found) {
-              dn[np] = (char)(b + 33);
-			  hc[np] = '*';
-			  np++;
-              DisplayInput();
-              found = true;
-              break;
-            }
-          } else {
-            if (Pressed(&Buttons[b], b + 33 + 32) && !found) {
-              dn[np] = (char)(b + 33 + 32);
-			  hc[np] = '*';
-			  np++;
-              DisplayInput();
-              found = true;
-              break;
-            }
-          }
-        }
+		if (np < MAX_KEYBOARD_CHARS){					  
+			found = false;
+			// check numbers
+			for (b = 15; b < 25; b++) {
+			  if (Pressed(&Buttons[b], b + 33) && !found) {
+				dn[np] = (char)(b + 33);
+				hc[np] = '*';
+				np++;
+				DisplayInput();
+				found = true;
+				break;
+			  }
+			}
+			// check letters
+			for (b = 32; b < 58; b++) {
+			  if (CapsLock) {
+				if (Pressed(&Buttons[b], b + 33) && !found) {
+				  dn[np] = (char)(b + 33);
+				  hc[np] = '*';
+				  np++;
+				  DisplayInput();
+				  found = true;
+				  break;
+				}
+			  } else {
+				if (Pressed(&Buttons[b], b + 33 + 32) && !found) {
+				  dn[np] = (char)(b + 33 + 32);
+				  hc[np] = '*';
+				  np++;
+				  DisplayInput();
+				  found = true;
+				  break;
+				}
+			  }
+			}
+		}	
       }
 
       for (b = 68; b < 74; b++) {
@@ -1001,14 +1005,15 @@ strcpy(dn, data);
         }
       }
 
-
-      if (b == 68) {
-        // space
-        dn[np] = ' ';
-		hc[np] = '*';
-        np++;
-        DisplayInput();
-        break;
+      if (b == 68) { 
+		  if (np < MAX_KEYBOARD_CHARS){	
+			// space
+			dn[np] = ' ';
+			hc[np] = '*';
+			np++;
+			DisplayInput();
+			//break;
+		  }
       }
       if (b == 71) {
         // back space
@@ -1042,11 +1047,7 @@ strcpy(dn, data);
 
 void Keyboard::setInitialText(const char *Text) {
 
-  uint8_t i;
-
-  for (i = 0; i < (MAX_KEYBOARD_CHARS); i++) {
-    inittext[i] = Text[i];
-  }
+  strncpy(inittext, Text,39);
   hasinittext = true;
 }
 
