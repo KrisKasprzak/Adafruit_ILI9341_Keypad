@@ -23,7 +23,8 @@ This library includes two classes 1) a class for getting user input using a 0-9 
    <br>
   6.0   7/14/2024      kasprzak 	updated to work with Teensy 4.0 (removed PROGMEM)
 <br>
-<b>The keyboard library has been tested in an ESP32 and MAY work with an Arduino's.</b>
+<b>The keyboard library has been tested with Teensy 3.2, Teensy 4.0, ESP32. Npt tested: Arduino's.</b>
+Note: if you are using a Teensy, consider using TeensyILI9341_t3 driver and TeensyILI9341_t3_Keypad
 <br>
 <br>
 Watch this YouTube Video for a demonstration:
