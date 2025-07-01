@@ -172,7 +172,7 @@ private:
 	uint16_t TBH = 30;
 	uint16_t OKBW = 70;
 	uint16_t OKBH = 70;
-	char inittext[MAX_KEYBOARD_CHARS+2];  // display initial text
+	char inittext[40];  // display initial text
 	char hc[MAX_KEYBOARD_CHARS+2];
 	char dn[MAX_KEYBOARD_CHARS+2];  // display number
 	uint16_t BtnX, BtnY;
@@ -285,12 +285,14 @@ public:
 	void getInput();
 	
 	void setCornerRadius(uint8_t Radius);
+	
+	void setInitialText(const char *Text);
 
     void setClickPin(int Value);
 
 	void setDisplayColor(uint16_t TextColor, uint16_t BackColor);
 	
-    char data[MAX_KEYBOARD_CHARS+1];
+    char data[MAX_KEYBOARD_CHARS+2];
 	
 	void hideInput();
 	
@@ -333,9 +335,9 @@ private:
 	const int Col10 = 305 - 12;
 
 	void ProcessTouch();
-	char dn[MAX_KEYBOARD_CHARS+1];
+	char dn[MAX_KEYBOARD_CHARS+2];
 	char hc[MAX_KEYBOARD_CHARS+2];
-	char inittext[MAX_KEYBOARD_CHARS+1];  // display initial text
+	char inittext[40];  // display initial text
 	
 	bool aclear = false;
 	bool hideinput = false;
@@ -360,7 +362,6 @@ private:
 	void DrawButton(BUTTON *temp, uint8_t ASCII, uint8_t State);
 	bool Pressed(BUTTON *temp, uint8_t ASCII);
 	void DisplayInput();
-	void setInitialText(const char *Text);	
 	
 	
 };
