@@ -93,8 +93,8 @@ void NumberPad::ComputeGrid(){
 	width = (bWide * 5) + (BS * 6);
 	height = (bHigh * 5) + (BS * 6);
 	
-	left = CW - width / 2;
-	top = CW - height / 2;
+	left = CW - (width / 2);
+	top = CW - (height / 2);
 
 	Row0 = top + BS;
 	Row1 = Row0 + bHigh + BS;
