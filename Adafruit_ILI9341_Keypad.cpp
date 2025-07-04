@@ -52,6 +52,12 @@ void NumberPad::init(uint16_t BackColor,
   rad = 0;
   numdec = 3;
   clickpin = -1;
+  
+   CW = d->width()/2;
+   
+	CH = d->height()/2;
+	
+	ComputeGrid();
 
   // in this class we are NOT initially writing to the char[0] as it's reserved for the - sign
   // hence we need to populate it to eliminate null terminator
@@ -75,8 +81,33 @@ void NumberPad::setDisplayColor(uint16_t TextColor, uint16_t BackColor) {
 void NumberPad::setLocation(uint16_t CenterWidth, uint16_t CenterHeight) {
   CW = CenterWidth;   // width center of screen
   CH = CenterHeight;  // height center of screen
+  
+   ComputeGrid();
 }
 
+
+void NumberPad::ComputeGrid(){
+	
+	// get overall box w, h
+	
+	width = (bWide * 5) + (BS * 6);
+	height = (bHigh * 5) + (BS * 6);
+	
+	left = CW - width / 2;
+	top = CW - height / 2;
+
+	Row0 = top + BS;
+	Row1 = Row0 + bHigh + BS;
+	Row2 = Row1 + bHigh + BS;
+	Row3 = Row2 + bHigh + BS;;
+	Row4 = Row3 + bHigh + BS;; 
+	
+	Col1 = left + BS;
+	Col2 = Col1 + bWide + BS;
+	Col3 = Col2 + bWide + BS;
+	Col4 = Col3 + bWide + BS;	
+	
+}
 void NumberPad::setButtonSizes(uint16_t ButtonWidth, uint16_t ButtonHeight, uint16_t Margins, uint16_t OKButtonWidth, uint16_t OKButtonHeight) {
 
   BW = ButtonWidth;
@@ -84,6 +115,8 @@ void NumberPad::setButtonSizes(uint16_t ButtonWidth, uint16_t ButtonHeight, uint
   BS = Margins;
   OKBW = OKButtonWidth;
   OKBH = OKButtonHeight;
+  
+  ComputeGrid();
 }
 
 void NumberPad::enableDecimal(bool State ) {
@@ -240,7 +273,7 @@ void NumberPad::getInput() {
   BuildButton(&Buttons[14], Col4, Row3, bWide * 2, (bHigh * 2) + 5, 0x02);  // cancel
 
   // large background box
-  d->fillRect(Col1 - 5, Row0 - 5, Col4 - Col1 + Buttons[13].w + 10, Row4 - Row0 + bHigh + 10, kcolor);
+  d->fillRect(left, top, width, height, kcolor);
 
   // text input box
   d->fillRect(Col1, Row0, Col3 - Col1 + bWide, bHigh, inputb);
