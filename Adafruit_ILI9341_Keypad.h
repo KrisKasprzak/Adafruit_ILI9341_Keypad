@@ -29,7 +29,8 @@
   4.0   4/30/2024      kasprzak      added corner rounding added trailing zero removal
   5.0   7/14/2024      kasprzak      added support for audible click when button pressed (requires hardward buzzer)
 										added support to specify decimal places	
-  6.0   7/14/2024      kasprzak 	updated to work with Teensy 4.0 (removed PROGMEM)
+  6.0   7/1/2025      kasprzak 	updated to work with Teensy 4.0 (removed PROGMEM)
+   6.1   7/4/2025     kasprzak 	enabling recentering and button size change
 */
 
 #ifndef ADAFRUIT_ILI9341_KEYPAD_H
