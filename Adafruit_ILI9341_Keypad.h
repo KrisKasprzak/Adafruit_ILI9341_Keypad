@@ -150,17 +150,19 @@ private:
 		uint8_t h;
 		uint8_t ascii;
 	};
-	
-	const int Row0 = 10;
-	const int Row1 = 50+5;
-	const int Row2 = 90+10;
-	const int Row3 = 130+15;
-	const int Row4 = 170+20;
 	bool useicon = false;
-	const int Col1 = 50;
-	const int Col2 = 90+5;
-	const int Col3 = 130+10;
-	const int Col4 = 170+15;
+	
+	int Row0 = 10;
+	int Row1 = 50+5;
+	int Row2 = 90+10;
+	int Row3 = 130+15;
+	int Row4 = 170+20;
+	
+	int Col1 = 50;
+	int Col2 = 90+5;
+	int Col3 = 130+10;
+	int Col4 = 170+15;
+	
 	int16_t tx, ty;
 	uint16_t tw, th;
 	uint8_t bHigh = 40, bWide = 40, rad = 0;
@@ -172,6 +174,13 @@ private:
 	uint16_t TBH = 30;
 	uint16_t OKBW = 70;
 	uint16_t OKBH = 70;
+	
+	uint16_t width = 0;
+	uint16_t height =0;
+	
+	uint16_t left = 0;
+	uint16_t top = 0;
+	
 	char inittext[40];  // display initial text
 	char hc[MAX_KEYBOARD_CHARS+2];
 	char dn[MAX_KEYBOARD_CHARS+2];  // display number
@@ -270,6 +279,7 @@ private:
 	bool Pressed(BUTTON *temp);
 	void DisplayInput();
 	void ProcessTouch();
+	void ComputeGrid();
 
 
 };
